@@ -14,5 +14,10 @@ public class Triangle {
 		this.B = B;
 		this.C = C;
 	}
+	
+	/*public Point2D projection(Point2D pnt)
+	{
+		
+	}*/
 
 }

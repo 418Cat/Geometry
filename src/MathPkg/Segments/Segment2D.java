@@ -1,6 +1,7 @@
 package MathPkg.Segments;
 
 import MathPkg.Angle.AbsAngle;
+import MathPkg.Angle.Angle;
 import MathPkg.Points.Point2D;
 import MathPkg.Vectors.Vector2D;
 
@@ -41,6 +42,37 @@ public class Segment2D {
 		return(Math.sqrt(
 				Math.pow(B.x - A.x, 2) + Math.pow(B.y - A.x, 2)
 				));
+	}
+	
+	public Point2D symmetry(Point2D pnt)
+	{
+		Vector2D tmpVect = new Vector2D(this.A, this.B);
+		
+		double coef = pnt.distance(this)/tmpVect.normalVectors()[0].norm();
+		int normVect = Angle.angle(this, pnt) > 180 ? 1 : 0;
+		Vector2D pntLine = new Vector2D(tmpVect.normalVectors()[normVect].x * coef, tmpVect.normalVectors()[normVect].y * coef);
+		
+		return(pntLine.multiply(2).transform(pnt));
+	}
+	
+	public Segment2D symmetry(Segment2D seg)
+	{
+		return(new Segment2D(this.symmetry(seg.A), this.symmetry(seg.B)));
+	}
+	
+	public Point2D projection(Point2D pnt)
+	{
+		if(this.PointBetween(pnt)) {
+			Vector2D tmpVect = new Vector2D(this.A, this.B);
+			
+			double coef = pnt.distance(this)/tmpVect.normalVectors()[0].norm();
+			int normVect = Angle.angle(this, pnt) > 180 ? 1 : 0;
+			Vector2D pntLine = new Vector2D(tmpVect.normalVectors()[normVect].x * coef, tmpVect.normalVectors()[normVect].y * coef);
+
+			return(pntLine.transform(pnt));
+		}
+		
+		return(pnt.distance(this.A) > pnt.distance(this.B) ? this.B : this.A);
 	}
 
 }

@@ -1,6 +1,7 @@
 package MathPkg.Lines;
 import MathPkg.Angle.Angle;
 import MathPkg.Points.Point2D;
+import MathPkg.Ray.Ray2D;
 import MathPkg.Segments.Segment2D;
 import MathPkg.Vectors.Vector2D;
 
@@ -27,6 +28,12 @@ public class Line2D {
 		this.vect = new Vector2D(A, new Point2D(A.x + 10 * Math.cos(angle * Math.PI/(double)180), A.y + 10 * Math.sin(angle * Math.PI/(double)180)));
 	}
 	
+	public Line2D(Segment2D seg)
+	{
+		this.point = seg.A;
+		this.vect = new Vector2D(seg.A, seg.B);
+	}
+	
 	public Point2D projection(Point2D pnt)
 	{
 		double coef = pnt.distance(this)/this.vect.normalVectors()[0].norm();
@@ -48,11 +55,7 @@ public class Line2D {
 	
 	public Point2D symmetry(Point2D pnt)
 	{
-		double coef = pnt.distance(this)/this.vect.normalVectors()[0].norm();
-		int normVect = Angle.angle(this, pnt) > 180 ? 1 : 0;
-		Vector2D pntLine = new Vector2D(this.vect.normalVectors()[normVect].x * coef, this.vect.normalVectors()[normVect].y * coef);
-		
-		return(pntLine.multiply(2).transform(pnt));
+		return(new Vector2D(pnt, this.projection(pnt)).multiply(2).transform(pnt));
 	}
 	
 	public Segment2D symmetry(Segment2D seg)

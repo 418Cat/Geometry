@@ -2,6 +2,7 @@ package MathPkg.Points;
 
 import MathPkg.Angle.AbsAngle;
 import MathPkg.Lines.Line2D;
+import MathPkg.Ray.Ray2D;
 import MathPkg.Segments.Segment2D;
 
 public class Point2D {
@@ -27,15 +28,19 @@ public class Point2D {
 		return(Math.sin(AbsAngle.angle(line, this) * Math.PI/180) * this.distance(line.point));
 	}
 	
+	public double distance(Ray2D ray)
+	{
+		if(AbsAngle.angle(ray, this) >= 90) return(this.distance(ray.origin));
+		
+		return(Math.sin(AbsAngle.angle(ray, this) * Math.PI/180) * this.distance(ray.origin));
+	}
+	
 	public double distance(Segment2D AB)
 	{
 		if(!AB.contains(this)) //if the point isn't in between the segment, the closest point is one of the extremities
 		{
 			return(Math.min(this.distance(AB.A), this.distance(AB.B)));
 		}
-		System.out.println("A : (" + AB.A.x + ", " + AB.A.y + ")");
-		System.out.println("B : (" + AB.B.x + ", " + AB.B.y + ")");
-		System.out.println("C : (" + this.x + ", " + this.y + ")");
 		Segment2D AC = new Segment2D(AB.A, this);
 		return(Math.sin(AbsAngle.angle(AB, this) * Math.PI/180) * this.distance(AB.A));
 		

@@ -1,6 +1,5 @@
 package MathPkg.Vectors;
 
-import MathPkg.Angle.AbsAngle;
 import MathPkg.Angle.Angle;
 import MathPkg.Points.Point2D;
 import MathPkg.Segments.Segment2D;
@@ -38,6 +37,13 @@ public class Vector2D {
 	public Vector2D(Point2D pnt, Line2D line)
 	{
 		Vector2D tmp = new Vector2D(pnt, line.projection(pnt));
+		this.x = tmp.x;
+		this.y = tmp.y;
+	}
+	
+	public Vector2D(Line2D line, Point2D pnt)
+	{
+		Vector2D tmp = new Vector2D(line.projection(pnt), pnt);
 		this.x = tmp.x;
 		this.y = tmp.y;
 	}

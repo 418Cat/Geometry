@@ -2,6 +2,7 @@ package MathPkg.Angle;
 
 import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
+import MathPkg.Ray.Ray2D;
 import MathPkg.Segments.Segment2D;
 import MathPkg.Vectors.Vector2D;
 
@@ -56,6 +57,16 @@ public class Angle {
 	public static double angle(Segment2D seg)
 	{
 		return(angle(new Vector2D(seg)));
+	}
+	
+	public static double angle(Ray2D ray)
+	{
+		return(angle(ray.vect));
+	}
+	
+	public static double angle(Ray2D ray, Point2D point)
+	{
+		return(angle(ray.vect, new Vector2D(ray.origin, point)));
 	}
 
 }
