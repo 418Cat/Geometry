@@ -44,7 +44,14 @@ public class Circle {
 	
 	public Vector2D normalVect(Point2D point)
 	{
-		return(new Vector2D(point, this.center).negate());
+		Vector2D tmpVect = new Vector2D(point, this.center).negate();
+		return(tmpVect.multiply(1/tmpVect.norm()));
+	}
+	
+	public Point2D projection(Point2D point)
+	{
+		Vector2D tmpVect = new Vector2D(point, this.center);
+		return(tmpVect.multiply((radius)/tmpVect.norm()).negate().transform(this.center));
 	}
 
 }

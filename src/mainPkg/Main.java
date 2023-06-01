@@ -10,7 +10,7 @@ import MathPkg.Points.Point2D;
 import MathPkg.Segments.Segment2D;
 import MathPkg.Shapes.Circle;
 import MathPkg.Vectors.Vector2D;
-import MathPkg.Angle;
+import MathPkg.Angle.*;
 import MathPkg.Lines.Line2D;
 
 public class Main {
@@ -18,7 +18,7 @@ public class Main {
 	public static void main(String[] args) {
 		
 		JFrame frame = new JFrame("Math test");
-		frame.setLocation(1150, 1080);
+		frame.setLocation(1000, 1080);
 		frame.setSize(1440, 1440);
 		frame.setUndecorated(true);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -32,101 +32,7 @@ public class Main {
 			System.out.println(e.toString());
 		}
 		
-		Point2D A = new Point2D(720, 720);
-		Point2D B = new Point2D(820, 620);
 		
-		Vector2D AB = new Vector2D(A, B);
-		
-		drawPoint(A, g, 'A');
-		drawPoint(B, g, 'B');
-		
-		drawVect(A, AB, g);
-		
-		System.out.println("AB angle : " + Angle.angle(AB));
-		
-		/*for(int i = 0; i < 200; i++)
-		{
-			B = new Point2D(820, 620+i);
-			AB = new Vector2D(A, B);
-			
-			g.clearRect(0, 0, 1440, 1440);
-			
-			drawPoint(A, g, 'A');
-			drawPoint(B, g, 'B');
-			
-			drawVect(A, AB, g);
-			
-			System.out.println("AB angle : " + Angle.angle(AB));
-			
-			try {
-				Thread.sleep(50);
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}
-		
-		for(int i = 0; i < 200; i++)
-		{
-			B = new Point2D(820-i, 820);
-			AB = new Vector2D(A, B);
-			
-			g.clearRect(0, 0, 1440, 1440);
-			
-			drawPoint(A, g, 'A');
-			drawPoint(B, g, 'B');
-			
-			drawVect(A, AB, g);
-			
-			System.out.println("AB angle : " + Angle.angle(AB));
-			
-			try {
-				Thread.sleep(50);
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}
-		
-		for(int i = 0; i < 200; i++)
-		{
-			B = new Point2D(620, 820-i);
-			AB = new Vector2D(A, B);
-			
-			g.clearRect(0, 0, 1440, 1440);
-			
-			drawPoint(A, g, 'A');
-			drawPoint(B, g, 'B');
-			
-			drawVect(A, AB, g);
-			
-			System.out.println("AB angle : " + Angle.angle(AB));
-			
-			try {
-				Thread.sleep(50);
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}
-		
-		for(int i = 0; i < 201; i++)
-		{
-			B = new Point2D(620+i, 620);
-			AB = new Vector2D(A, B);
-			
-			g.clearRect(0, 0, 1440, 1440);
-			
-			drawPoint(A, g, 'A');
-			drawPoint(B, g, 'B');
-			
-			drawVect(A, AB, g);
-			
-			System.out.println("AB angle : " + Angle.angle(AB));
-			
-			try {
-				Thread.sleep(50);
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}*/
 
 	}
 	
@@ -161,7 +67,7 @@ public class Main {
 	static void drawAngle(Segment2D segA, Segment2D segB, int radius, Graphics g)
 	{
 		g.setColor(Color.cyan);
-		g.drawArc((int)segA.A.x-radius, (int)segA.A.y-radius, radius*2, radius*2, (int)Angle.angle(segA, new Vector2D(1, 0)),(int)Angle.angle(segA, segB));
+		g.drawArc((int)segA.A.x-radius, (int)segA.A.y-radius, radius*2, radius*2, (int)AbsAngle.angle(segA, new Vector2D(1, 0)),(int)AbsAngle.angle(segA, segB));
 	}
 	
 	static void drawSegment(Segment2D segment, Graphics g)

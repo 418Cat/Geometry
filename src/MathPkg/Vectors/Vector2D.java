@@ -1,6 +1,7 @@
 package MathPkg.Vectors;
 
-import MathPkg.Angle;
+import MathPkg.Angle.AbsAngle;
+import MathPkg.Angle.Angle;
 import MathPkg.Points.Point2D;
 import MathPkg.Segments.Segment2D;
 import MathPkg.Lines.Line2D;
@@ -34,6 +35,13 @@ public class Vector2D {
 		this.y = line.vect.y;
 	}
 	
+	public Vector2D(Point2D pnt, Line2D line)
+	{
+		Vector2D tmp = new Vector2D(pnt, line.projection(pnt));
+		this.x = tmp.x;
+		this.y = tmp.y;
+	}
+	
 	public double norm()
 	{
 		return(Math.sqrt(x*x + y*y));
@@ -44,9 +52,14 @@ public class Vector2D {
 		return(this.x*B.x + this.y*B.y);
 	}
 	
+	public double determinant(Vector2D B)
+	{
+		return(this.x*B.y - this.y*B.x);
+	}
+	
 	public Vector2D[] normalVectors()
 	{
-		return(new Vector2D[] {new Vector2D(-this.y, this.x), new Vector2D(this.y, -this.x)});
+		return(new Vector2D[] {new Vector2D(-this.y, this.x).unit(), new Vector2D(this.y, -this.x).unit()});
 	}
 	
 	public Vector2D negate()
@@ -56,7 +69,7 @@ public class Vector2D {
 	
 	public Vector2D turn(double angle)
 	{
-		double thisAngle = Angle.angle(this, new Vector2D(1, 0)) * Math.PI/180;
+		double thisAngle = Angle.angle(this) * Math.PI/180;
 		double x = this.norm() * (Math.cos(angle * Math.PI/180 + thisAngle));
 		double y = this.norm() * (Math.sin(angle * Math.PI/180 + thisAngle));
 		
@@ -68,9 +81,19 @@ public class Vector2D {
 		return(new Vector2D(this.x + vect.x, this.y + vect.y));
 	}
 	
-	public Vector2D symmetry(Vector2D symVect)
+	public Point2D transform(Point2D point)
 	{
-		return(this.turn(0)); //TODO
+		return(new Point2D(point.x + this.x, point.y + this.y));
+	}
+	
+	public Vector2D multiply(double mult)
+	{
+		return(new Vector2D(this.x * mult, this.y * mult));
+	}
+	
+	public Vector2D unit()
+	{
+		return(this.multiply(1/this.norm()));
 	}
 	
 }

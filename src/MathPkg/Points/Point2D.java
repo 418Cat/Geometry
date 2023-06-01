@@ -1,6 +1,6 @@
 package MathPkg.Points;
 
-import MathPkg.Angle;
+import MathPkg.Angle.AbsAngle;
 import MathPkg.Lines.Line2D;
 import MathPkg.Segments.Segment2D;
 
@@ -24,7 +24,7 @@ public class Point2D {
 	
 	public double distance(Line2D line)
 	{	
-		return(Math.sin(Angle.angle(line, this) * Math.PI/180) * this.distance(line.point));
+		return(Math.sin(AbsAngle.angle(line, this) * Math.PI/180) * this.distance(line.point));
 	}
 	
 	public double distance(Segment2D AB)
@@ -37,7 +37,7 @@ public class Point2D {
 		System.out.println("B : (" + AB.B.x + ", " + AB.B.y + ")");
 		System.out.println("C : (" + this.x + ", " + this.y + ")");
 		Segment2D AC = new Segment2D(AB.A, this);
-		return(Math.sin(Angle.angle(AB, this) * Math.PI/180) * this.distance(AB.A));
+		return(Math.sin(AbsAngle.angle(AB, this) * Math.PI/180) * this.distance(AB.A));
 		
 	}
 

@@ -1,4 +1,4 @@
-package MathPkg;
+package MathPkg.Angle;
 
 import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
@@ -7,21 +7,20 @@ import MathPkg.Vectors.Vector2D;
 
 public class Angle {
 	
-	public static double angle(Vector2D A, Vector2D B)
+	static public double angle(Vector2D vect1, Vector2D vect2)
 	{
-		double div = A.dotProduct(B)/(A.norm() * B.norm());
-		
-		//to account for double imprecision
-		if(div > 1 || div < -1)
-		{
-			return(div > 1 ? 0 : 180);
-		}
-		return(Math.acos(div) * 180/Math.PI);	
+		double angle = (Math.atan2(vect1.dotProduct(vect2), vect1.determinant(vect2))- Math.PI/2) * 180/Math.PI;
+		return(angle < 0 ? 360+angle : angle);
 	}
 	
-	public static double angle(Point2D A, Point2D AnglePoint, Point2D B)
+	static public double angle(Vector2D vect)
 	{
-		return(angle(new Vector2D(AnglePoint, A), new Vector2D(AnglePoint, B)));
+		return(angle(vect, new Vector2D(1, 0)));
+	}
+	
+	public static double angle(Point2D A, Point2D anglePoint, Point2D B)
+	{
+		return(angle(new Vector2D(anglePoint, A), new Vector2D(anglePoint, B)));
 	}
 	
 	public static double angle(Line2D A, Line2D B)
@@ -49,11 +48,6 @@ public class Angle {
 		return(angle(new Vector2D(AB), AC));
 	}
 	
-	public static double angle(Vector2D vect)
-	{
-		return(angle(vect, new Vector2D(10, 0)));
-	}
-	
 	public static double angle(Line2D line)
 	{
 		return(angle(line.vect));
@@ -63,4 +57,5 @@ public class Angle {
 	{
 		return(angle(new Vector2D(seg)));
 	}
+
 }

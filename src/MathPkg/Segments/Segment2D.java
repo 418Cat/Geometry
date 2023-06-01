@@ -1,6 +1,6 @@
 package MathPkg.Segments;
 
-import MathPkg.Angle;
+import MathPkg.Angle.AbsAngle;
 import MathPkg.Points.Point2D;
 import MathPkg.Vectors.Vector2D;
 
@@ -23,12 +23,12 @@ public class Segment2D {
 	
 	public boolean contains(Point2D point)
 	{
-		return(Angle.angle(this, point) == 0 && Angle.angle(this.negate(), point) == 0);
+		return(AbsAngle.angle(this, point) == 0 && AbsAngle.angle(this.negate(), point) == 0);
 	}
 	
 	public boolean PointBetween(Point2D point)
 	{
-		return(Angle.angle(this, point) <= 90 && Angle.angle(this.negate(), point) <= 90);
+		return(AbsAngle.angle(this, point) <= 90 && AbsAngle.angle(this.negate(), point) <= 90);
 	}
 	
 	public Segment2D negate()
