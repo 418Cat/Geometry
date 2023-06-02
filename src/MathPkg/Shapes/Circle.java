@@ -6,6 +6,7 @@ import MathPkg.Points.Point2D;
 import MathPkg.Ray.Ray2D;
 import MathPkg.Segments.Segment2D;
 import MathPkg.Vectors.Vector2D;
+import mainPkg.Main;
 
 public class Circle {
 	
@@ -113,15 +114,15 @@ public class Circle {
 	
 	public Ray2D hitSymmetry(Ray2D ray)
 	{
-		if(intersects(ray) < 0) return ray;
+		if(intersects(ray) < 0) return new Ray2D(new Point2D(0, 0), new Vector2D(1, 1));
 		
 		Point2D[] rayIntersect = this.intersection(ray);
-		Point2D closest = rayIntersect.length > 1 ? rayIntersect[0].distance(ray) > rayIntersect[1].distance(ray) ? rayIntersect[1] : rayIntersect[0] : rayIntersect[0];
+
+		Point2D closestPoint = rayIntersect.length > 1 ? rayIntersect[0].distance(ray.origin) > rayIntersect[1].distance(ray.origin) ? rayIntersect[1] : rayIntersect[0] : rayIntersect[0];
 		
-		Line2D symmetryLine = new Line2D(this.center, closest);
-		Vector2D symmetryVect = new Vector2D(closest, symmetryLine.symmetry(ray.origin));
+		Line2D normLine = new Line2D(this.center, closestPoint);
+		return(new Ray2D(closestPoint, normLine.symmetry(new Segment2D(closestPoint, ray.origin)).B));
 		
-		return(new Ray2D(closest, symmetryVect));
 	}
 
 }

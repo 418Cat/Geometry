@@ -1,5 +1,5 @@
 package MathPkg.Lines;
-import MathPkg.Angle.Angle;
+import MathPkg.Angle.*;
 import MathPkg.Points.Point2D;
 import MathPkg.Ray.Ray2D;
 import MathPkg.Segments.Segment2D;
@@ -48,9 +48,14 @@ public class Line2D {
 		return(pnt.distance(this) == 0);
 	}
 	
-	public Line2D negate()
+	public Point2D intersection(Line2D line)
 	{
-		return(new Line2D(point, vect.negate()));
+		Point2D projPoint = line.projection(this.point);
+		
+		double angle = Angle.angle(this, projPoint);
+		double opposite = this.point.distance(projPoint)*Math.tan(-angle * Math.PI/180);
+		
+		return(line.vect.unit().multiply(opposite).transform(projPoint));
 	}
 	
 	public Point2D symmetry(Point2D pnt)

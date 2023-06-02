@@ -17,11 +17,16 @@ import MathPkg.Ray.*;
 
 public class Main {
 	
-	public static Circle[] circList = new Circle[50];
-	public static ArrayList<Point2D> intersects = new ArrayList<>();
+	public static Circle[] circList = new Circle[100];
+	public static Line2D[] lineList = new Line2D[1];
+	public static ArrayList<Circle> circArr = new ArrayList<>();
+	
 	public static Graphics g;
 	public static Ray2D ray;
-	public static int MAX_BOUNCES = 10;
+	public static Line2D line;
+	public static int MAX_BOUNCES = 2;
+	public static int RAY_NB = 600;
+	public static double FOV = 360.0;
 
 	public static void main(String[] args) {
 		
@@ -46,19 +51,35 @@ public class Main {
 			System.out.println(e.toString());
 		}
 		
-		ray = new Ray2D(new Point2D(500, 500), new Vector2D(50, 10));
+		line = new Line2D(new Point2D(500, 200), new Vector2D(50, 10));
 		
-		circList = new Circle[300];
 		int MAX_HEIGHT = 1440;
 		int MAX_WIDTH = 1440;
-		int MAX_RADIUS = 50;
+		int MAX_RADIUS = 75;
+		
+		int DIST = 100;
 		
 		for(int i = 0; i < circList.length; i++)
 		{
 			circList[i] = new Circle(new Point2D(Math.random()*MAX_WIDTH, Math.random()*MAX_HEIGHT), Math.random()*MAX_RADIUS);
 		}
+		/*int nbCirc = 0;
+		for(int x = 0; x < MAX_WIDTH; x+=DIST)
+		{
+			for(int y = 0; y < MAX_HEIGHT; y+=DIST)
+			{
+				if(nbCirc < circList.length -1) {
+					circList[nbCirc] = new Circle(new Point2D(Math.random()*MAX_WIDTH, Math.random()*MAX_HEIGHT), Math.random()*MAX_RADIUS);
+					nbCirc++;
+				}
+			}
+		}*/
 		
-		ray.origin = new Point2D(720, 720);
+		lineList[0] = new Line2D(new Point2D(200, 800), new Point2D(800, 800));
+		
+		line.point= new Point2D(720, 720);
+		
+		ray = new Ray2D(new Point2D(720, 720), new Vector2D(1, 1));
 		
 		/*for(int i = 0; i < 7200; i++)
 		{
@@ -179,63 +200,114 @@ public class Main {
 		ray.origin.y = y;
 	}
 	
-	public static void renderRay(int x, int y)
+	public static void renderLine(int x, int y)
 	{
-		ArrayList<Segment2D> segm = new ArrayList<>();
-		ArrayList<Point2D> bounces = new ArrayList<>();
 		g.clearRect(0, 0, 1440, 1440);
 		
-		ray.vect = new Vector2D(ray.origin, new Point2D(x, y));
-		Ray2D currentRay = ray;
-		drawPoint(ray.origin, g, 'O');
-		Circle lastCirc = null;
+		line.vect = new Vector2D(line.point, new Point2D(x, y));
+		drawLine(line, 500, g);
 		
-		for(int i = 0; i < MAX_BOUNCES; i++)
+		for(Line2D seg : lineList)
 		{
+			drawPoint(seg.intersection(line), g, ' ');
+			drawLine(seg, 500, g);
+		}
+	}
+	
+	public static void renderRay(int x, int y)
+	{
+		int iter = 0;
+		double DEGREE_PER_RAY = FOV/RAY_NB;
+		//ray.vect = new Vector2D(ray.origin, new Point2D(x, y));
+		ray.origin.x = x;
+		ray.origin.y = y;
+		ray.vect = ray.vect.turn(-FOV/(double)2);
+		long startMS = System.currentTimeMillis();
+		g.setColor(Color.black);
+		g.fillRect(0, 0, 1440, 1440);
+		//g.clearRect(0, 0, 1440, 1440);
+		
+		for(int rayNb = 0; rayNb < RAY_NB; rayNb++)
+		{
+			double rayLength = 0;
+			ray.vect = ray.vect.turn(DEGREE_PER_RAY);
+			ArrayList<Segment2D> segm = new ArrayList<>();
+			ArrayList<Point2D> bounces = new ArrayList<>();
 			
-			Circle closestCirc = null;
-			Point2D closestPoint = null;
-			double dist = Double.MAX_VALUE;
+			Ray2D currentRay = ray;
+			drawPoint(ray.origin, g, 'O');
+			Circle lastCirc = null;
 			
-			for(Circle circ : circList)
+			for(int i = 0; i <= MAX_BOUNCES; i++)
 			{
-				for(Point2D pnt : circ.intersection(currentRay))
-				{
-					if(circ == lastCirc) break;
-					
-					if(pnt.distance(currentRay.origin) < dist)
-					{
-						closestCirc = circ;
-						closestPoint = pnt;
-						dist = pnt.distance(currentRay.origin);
-					}
-				}
-				drawCircle(circ, g);
-			}
-			
-			if(closestPoint != null)
-			{
-				bounces.add(closestPoint);
-				Segment2D prevSegm = new Segment2D(currentRay.origin, closestPoint);
-				segm.add(prevSegm);
 				
-				Line2D normLine = new Line2D(closestCirc.center, closestPoint);
-				currentRay = new Ray2D(closestPoint, normLine.symmetry(new Segment2D(closestPoint, currentRay.origin)).B);
-				lastCirc = closestCirc;
+				Circle closestCirc = null;
+				Point2D closestPoint = null;
+				double dist = Double.MAX_VALUE;
+				
+				for(Circle circ : circList)
+				{
+					if(circ.intersects(ray.origin) > -1)
+					{
+						Point2D ext = circ.projection(ray.origin);
+						return;
+					}
+					
+					for(Point2D pnt : circ.intersection(currentRay))
+					{
+						if(circ == lastCirc) break; //making sure the ray isn't tempted to collide with the same circle as the last one, this goofy ray
+						
+						if(pnt.distance(currentRay.origin) < dist)
+						{
+							closestCirc = circ;
+							closestPoint = pnt;
+							dist = pnt.distance(currentRay.origin);
+						}
+						iter++;
+					}
+					//drawCircle(circ, g);
+				}
+				
+				/*for(Line2D seg : lineList)
+				{
+					drawLine(seg, 500, g);
+				}*/
+				
+				if(closestPoint != null)
+				{
+					bounces.add(closestPoint);
+					Segment2D prevSegm = new Segment2D(currentRay.origin, closestPoint);
+					segm.add(prevSegm);
+					
+					rayLength+=prevSegm.norm();
+					//drawPoint(closestPoint, g, ' ');
+					//System.out.println(rayLength);
+					int color = (int)(-0.1*rayLength + 255);
+					color = color > 255 ? 255 : color < 0 ? 0 : color;
+					//System.out.println(color);*/
+					g.setColor(new Color(color, color, color, 200));
+					g.drawOval((int)closestPoint.x, (int)closestPoint.y, 1, 1);
+					//drawSegment(prevSegm, g);
+
+					currentRay = closestCirc.hitSymmetry(currentRay);
+					
+					lastCirc = closestCirc;
+				}
+				
+				
 			}
 			
-			
+			//bounces.forEach(p -> drawPoint(p, g, ' '));
+			//if(bounces.size() == 0) drawRay(currentRay, 1500, g);
 		}
 		
-		bounces.forEach(p -> drawPoint(p, g, ' '));
-		segm.forEach(s -> drawSegment(s, g));
-		System.out.println(bounces.size());
-		drawRay(currentRay, 1000, g);
-		System.out.print("bounces : " + bounces.size());
+		char[] fps = String.valueOf((int)(1000/(System.currentTimeMillis() - startMS))).toCharArray();
+		//System.out.print("\riter" + iter + "; ms:"+(System.currentTimeMillis() - startMS));
+		g.drawChars(fps, 0, fps.length, 50, 50);
 		
 	}
 	
-	static void drawPoint(Point2D a, Graphics g, char name)
+	public static void drawPoint(Point2D a, Graphics g, char name)
 	{
 		g.setColor(Color.red);
 		g.fillOval((int)a.x - 5, (int)a.y - 5, 10, 10);
