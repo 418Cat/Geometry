@@ -72,8 +72,9 @@ public class Vector3D {
 		return(new Point3D(pnt.x + this.x, pnt.y + this.y, pnt.z + this.z));
 	}
 	
-	/*public Vector3D turnZAxis(double degrees)
+	public Vector3D add(Vector3D vect)
 	{
-		
-	}*/
+		return(new Vector3D(this.x + vect.x, this.y + vect.y, this.z + vect.z));
+	}
+	
 }

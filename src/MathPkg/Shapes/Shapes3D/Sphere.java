@@ -59,7 +59,7 @@ public class Sphere {
 		
 		Point3D projCent = ray.projection(center);
 		
-		double distProjCentIntersect = Math.sqrt(radius*radius - Math.pow(center.distance(ray), 2));
+		double distProjCentIntersect = Math.sqrt(radius*radius - Math.pow(ray.projection(center).distance(center), 2));
 		
 		Vector3D projCentIntersectVect = ray.vect.unit().multiply(distProjCentIntersect);
 		

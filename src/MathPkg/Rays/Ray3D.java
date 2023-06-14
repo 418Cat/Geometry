@@ -31,6 +31,5 @@ public class Ray3D {
 		
 		return(this.vect.unit().multiply(distOriginProjPnt).transform(pnt));
 	}
-	
 
 }
