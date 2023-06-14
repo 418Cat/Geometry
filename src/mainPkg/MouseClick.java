@@ -4,13 +4,9 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class MouseClick implements MouseListener {
-	
-	MouseClick(){};
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
-		Main.moveRay(e.getX(), e.getY());
 		
 	}
 

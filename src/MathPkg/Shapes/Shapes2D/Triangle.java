@@ -1,4 +1,4 @@
-package MathPkg.Shapes;
+package MathPkg.Shapes.Shapes2D;
 
 import MathPkg.Points.Point2D;
 

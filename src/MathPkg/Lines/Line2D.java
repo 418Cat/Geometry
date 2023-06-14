@@ -1,39 +1,57 @@
 package MathPkg.Lines;
-import MathPkg.Angle.*;
+import MathPkg.Angle.Angle2D.Angle;
 import MathPkg.Points.Point2D;
-import MathPkg.Ray.Ray2D;
 import MathPkg.Segments.Segment2D;
 import MathPkg.Vectors.Vector2D;
 
+/**
+ * Line object composed of a point and a unit vector
+ * @author 418cat
+ * @see Point2D
+ * @see Vector2D
+ */
 public class Line2D {
 	
 	public Point2D point;
 	public Vector2D vect;
 	
+	/**
+	 * Defines this line as passing by two points.
+	 * @param A first point
+	 * @param B second point
+	 */
 	public Line2D(Point2D A, Point2D B)
 	{
 		this.point = A;
-		this.vect = new Vector2D(A, B);
+		this.vect = new Vector2D(A, B).unit();
 	}
 	
+	/**
+	 * Defines this line passing by a point with a unit vector.
+	 * @param A point
+	 * @param vect unit vector
+	 */
 	public Line2D(Point2D A, Vector2D vect)
 	{
 		this.point = A;
-		this.vect = vect;
+		this.vect = vect.unit();
 	}
 	
-	public Line2D(Point2D A, double angle)
-	{
-		this.point = A;
-		this.vect = new Vector2D(A, new Point2D(A.x + 10 * Math.cos(angle * Math.PI/(double)180), A.y + 10 * Math.sin(angle * Math.PI/(double)180)));
-	}
-	
+	/**
+	 * Defines this line as passing by a segment's both edge points
+	 * @param seg
+	 */
 	public Line2D(Segment2D seg)
 	{
 		this.point = seg.A;
-		this.vect = new Vector2D(seg.A, seg.B);
+		this.vect = new Vector2D(seg.A, seg.B).unit();
 	}
 	
+	/**
+	 * 
+	 * @param pnt
+	 * @return
+	 */
 	public Point2D projection(Point2D pnt)
 	{
 		double coef = pnt.distance(this)/this.vect.normalVectors()[0].norm();

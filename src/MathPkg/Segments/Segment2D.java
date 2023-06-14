@@ -1,7 +1,7 @@
 package MathPkg.Segments;
 
-import MathPkg.Angle.AbsAngle;
-import MathPkg.Angle.Angle;
+import MathPkg.Angle.Angle2D.AbsAngle;
+import MathPkg.Angle.Angle2D.Angle;
 import MathPkg.Points.Point2D;
 import MathPkg.Vectors.Vector2D;
 

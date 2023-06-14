@@ -1,8 +1,8 @@
 package MathPkg.Points;
 
-import MathPkg.Angle.AbsAngle;
+import MathPkg.Angle.Angle2D.AbsAngle;
 import MathPkg.Lines.Line2D;
-import MathPkg.Ray.Ray2D;
+import MathPkg.Rays.Ray2D;
 import MathPkg.Segments.Segment2D;
 
 public class Point2D {
@@ -41,7 +41,6 @@ public class Point2D {
 		{
 			return(Math.min(this.distance(AB.A), this.distance(AB.B)));
 		}
-		Segment2D AC = new Segment2D(AB.A, this);
 		return(Math.sin(AbsAngle.angle(AB, this) * Math.PI/180) * this.distance(AB.A));
 		
 	}

@@ -1,6 +1,7 @@
-package MathPkg.Ray;
+package MathPkg.Rays;
 
-import MathPkg.Angle.*;
+import MathPkg.Angle.Angle2D.AbsAngle;
+import MathPkg.Angle.Angle2D.Angle;
 import MathPkg.Points.Point2D;
 import MathPkg.Segments.Segment2D;
 import MathPkg.Vectors.Vector2D;
