@@ -1,7 +1,10 @@
 package MathPkg.Lines;
+import MathPkg.Angle.Angle2D.AbsAngle;
 import MathPkg.Angle.Angle2D.Angle;
 import MathPkg.Points.Point2D;
+import MathPkg.Rays.Ray2D;
 import MathPkg.Segments.Segment2D;
+import MathPkg.Shapes.Shapes2D.Reflector2D;
 import MathPkg.Vectors.Vector2D;
 
 /**
@@ -10,7 +13,7 @@ import MathPkg.Vectors.Vector2D;
  * @see Point2D
  * @see Vector2D
  */
-public class Line2D {
+public class Line2D implements Reflector2D {
 	
 	public Point2D point;
 	public Vector2D vect;
@@ -68,12 +71,18 @@ public class Line2D {
 	
 	public Point2D intersection(Line2D line)
 	{
-		Point2D projPoint = line.projection(this.point);
+		Point2D proj = line.projection(this.point);
 		
-		double angle = Angle.angle(this, projPoint);
-		double opposite = this.point.distance(projPoint)*Math.tan(-angle * Math.PI/180);
+		Vector2D pointToProj = new Vector2D(this.point, proj);
 		
-		return(line.vect.unit().multiply(opposite).transform(projPoint));
+		double angleIntersectPointProj = AbsAngle.angle(this.vect.transform(this.point), this.point, proj);
+		
+		boolean angleInf90 = angleIntersectPointProj < 90;
+		angleIntersectPointProj = angleIntersectPointProj > 90 ? 90 - angleIntersectPointProj%90 : angleIntersectPointProj;
+		
+		double dist = pointToProj.norm()/Math.cos(angleIntersectPointProj * Math.PI/180);
+		
+		return(angleInf90 ? this.vect.unit().multiply(dist).transform(this.point) : this.vect.negate().unit().multiply(dist).transform(this.point));
 	}
 	
 	public Point2D symmetry(Point2D pnt)
@@ -84,6 +93,30 @@ public class Line2D {
 	public Segment2D symmetry(Segment2D seg)
 	{
 		return(new Segment2D(this.symmetry(seg.A), this.symmetry(seg.B)));
+	}
+
+	@Override
+	public boolean intersects(Ray2D ray) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public int intersectionState(Ray2D ray) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public Ray2D reflect(Ray2D ray) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Point2D[] intersection(Ray2D ray) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
