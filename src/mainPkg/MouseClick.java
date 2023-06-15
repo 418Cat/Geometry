@@ -7,7 +7,8 @@ public class MouseClick implements MouseListener {
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		
+		Main.ex.click(e.getX(), e.getY());
+		Main.ex.draw();
 	}
 
 	@Override

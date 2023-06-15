@@ -40,6 +40,12 @@ public class Line2D implements Reflector2D {
 		this.vect = vect.unit();
 	}
 	
+	public Line2D(Ray2D ray)
+	{
+		this.vect = ray.vect.unit();
+		this.point = ray.origin;
+	}
+	
 	/**
 	 * Defines this line as passing by a segment's both edge points
 	 * @param seg
@@ -97,26 +103,25 @@ public class Line2D implements Reflector2D {
 
 	@Override
 	public boolean intersects(Ray2D ray) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public int intersectionState(Ray2D ray) {
-		// TODO Auto-generated method stub
-		return 0;
+		return(AbsAngle.angle(new Vector2D(ray.origin, this.projection(ray.origin)), ray.vect) < 90);
 	}
 
 	@Override
 	public Ray2D reflect(Ray2D ray) {
-		// TODO Auto-generated method stub
-		return null;
+		if(!this.intersects(ray)) return null;
+		
+		Point2D intersectionPnt = this.intersection(ray)[0];
+		Line2D normal = new Line2D(intersectionPnt, this.vect.normalVectors()[0]);
+		Point2D symPnt = normal.symmetry(ray.origin);
+		
+		return(new Ray2D(this.intersection(ray)[0], symPnt));
 	}
 
 	@Override
 	public Point2D[] intersection(Ray2D ray) {
-		// TODO Auto-generated method stub
-		return null;
+		if(!this.intersects(ray)) return(new Point2D[] {});
+
+		return(new Point2D[] {this.intersection(new Line2D(ray))});
 	}
 
 }

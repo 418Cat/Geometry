@@ -2,10 +2,13 @@ package MathPkg.Segments;
 
 import MathPkg.Angle.Angle2D.AbsAngle;
 import MathPkg.Angle.Angle2D.Angle;
+import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
+import MathPkg.Rays.Ray2D;
+import MathPkg.Shapes.Shapes2D.Reflector2D;
 import MathPkg.Vectors.Vector2D;
 
-public class Segment2D {
+public class Segment2D implements Reflector2D {
 	
 	public Point2D A;
 	public Point2D B;
@@ -73,6 +76,31 @@ public class Segment2D {
 		}
 		
 		return(pnt.distance(this.A) > pnt.distance(this.B) ? this.B : this.A);
+	}
+
+	@Override
+	public boolean intersects(Ray2D ray) {
+		
+		Line2D line = new Line2D(this);
+		
+		if(!line.intersects(ray)) return false;
+		
+		return(this.PointBetween(line.intersection(ray)[0]));
+	}
+
+	@Override
+	public Ray2D reflect(Ray2D ray) {
+		if(!this.intersects(ray)) return null;
+		
+		return(new Line2D(this).reflect(ray));
+		
+	}
+
+	@Override
+	public Point2D[] intersection(Ray2D ray) {
+		if(!this.intersects(ray)) return new Point2D[] {};
+		
+		return(new Line2D(this).intersection(ray));
 	}
 
 }

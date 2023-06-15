@@ -13,6 +13,7 @@ import MathPkg.Rays.Ray2D;
 import MathPkg.Segments.Segment2D;
 import MathPkg.Shapes.Shapes2D.Circle;
 import MathPkg.Shapes.Shapes2D.Reflector2D;
+import MathPkg.Shapes.Shapes2D.Triangle;
 import MathPkg.Vectors.Vector2D;
 
 public class Frame {
@@ -63,6 +64,16 @@ public class Frame {
 	{
 		if(ref.getClass() == Circle.class) draw((Circle)ref);
 		if(ref.getClass() == Segment2D.class) draw((Segment2D)ref);
+		if(ref.getClass() == Line2D.class) draw((Line2D)ref);
+		if(ref.getClass() == Triangle.class) draw((Triangle)ref);
+	}
+	
+	public static void draw(Triangle tri)
+	{
+		for(Segment2D seg : tri.segments())
+		{
+			draw(seg);
+		}
 	}
 	
 	public static void draw(Point2D a, String name)
@@ -74,14 +85,14 @@ public class Frame {
 		g.drawChars(name.toCharArray(), 0, name.length(), (int)a.x - 3, (int)a.y + 20);
 	}
 	
-	static void draw(Point2D pnt, Vector2D vect)
+	public static void draw(Point2D pnt, Vector2D vect)
 	{
 		g.setColor(Color.blue);
 		g.drawLine((int)pnt.x, (int)pnt.y, (int)(pnt.x + vect.x), (int)(pnt.y + vect.y));
 		g.fillOval((int)(pnt.x + vect.x) - 3, (int)(pnt.y + vect.y)-3, 6, 6);
 	}
 	
-	static void draw(Line2D line)
+	public static void draw(Line2D line)
 	{
 		int mult = 1530;
 		g.setColor(Color.green);
@@ -89,25 +100,25 @@ public class Frame {
 		g.drawLine((int)line.point.x, (int)line.point.y, (int)(line.point.x - line.vect.unit().x*mult), (int)(line.point.y - line.vect.unit().y*mult));
 	}
 	
-	static void draw(Circle circle)
+	public static void draw(Circle circle)
 	{
 		g.setColor(Color.pink);
 		g.drawOval((int)(circle.center.x - circle.radius), (int)(circle.center.y - circle.radius), (int)circle.radius*2, (int)circle.radius*2);
 	}
 	
-	static void draw(Segment2D segA, Segment2D segB, int radius)
+	public static void draw(Segment2D segA, Segment2D segB, int radius)
 	{
 		g.setColor(Color.cyan);
 		g.drawArc((int)segA.A.x-radius, (int)segA.A.y-radius, radius*2, radius*2, (int)AbsAngle.angle(segA, new Vector2D(1, 0)),(int)AbsAngle.angle(segA, segB));
 	}
 	
-	static void draw(Segment2D segment)
+	public static void draw(Segment2D segment)
 	{
 		g.setColor(Color.gray);
 		g.drawLine((int)segment.A.x, (int)segment.A.y, (int)segment.B.x, (int)segment.B.y);
 	}
 	
-	static void draw(Ray2D ray)
+	public static void draw(Ray2D ray)
 	{
 		int mult = 1530;
 		g.setColor(Color.magenta);

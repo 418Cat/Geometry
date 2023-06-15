@@ -64,8 +64,6 @@ public class Circle implements Reflector2D {
 		return(this.intersectionState(segment) > -1);
 	}
 	
-	
-	@Override
 	public int intersectionState(Ray2D ray)
 	{
 		return(center.distance(ray) == radius ? 0 : center.distance(ray) < radius ? 1 : -1);
@@ -148,19 +146,6 @@ public class Circle implements Reflector2D {
 		
 		Line2D normLine = new Line2D(this.center, closestPoint);
 		return(new Ray2D(closestPoint, normLine.symmetry(new Segment2D(closestPoint, ray.origin)).B));
-	}
-
-	
-	@Override
-	public Point2D firstIntersection(Ray2D ray) {
-		
-		if(!this.intersects(ray)) return null;
-		System.out.println("aaaaah");
-		
-		Point2D[] rayIntersect = this.intersection(ray);
-		Point2D closestPoint = rayIntersect.length > 1 ? rayIntersect[0].distance(ray.origin) > rayIntersect[1].distance(ray.origin) ? rayIntersect[1] : rayIntersect[0] : rayIntersect[0];
-		
-		return(closestPoint);
 	}
 
 }

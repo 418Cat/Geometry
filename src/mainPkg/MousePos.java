@@ -14,8 +14,8 @@ public class MousePos implements MouseMotionListener {
 	@Override
 	public void mouseMoved(MouseEvent e) {
 		
-		Main.moveObj(e.getX(), e.getY());
-		Main.draw();
+		Main.ex.mouse(e.getX(), e.getY());
+		Main.ex.draw();
 		
 	}
 
