@@ -51,7 +51,13 @@ public class Frame {
 	
 	public static void clear()
 	{
-		g.clearRect(0, 0, 1080, 1080);
+		g.clearRect(0, 0, Main.frameSize[0], Main.frameSize[1]);
+	}
+	
+	public static void clear(Color color)
+	{
+		g.setColor(color);
+		g.fillRect(0, 0, Main.frameSize[0], Main.frameSize[1]);
 	}
 	
 	public static void drawPix(int x, int y, Color color)
@@ -94,7 +100,7 @@ public class Frame {
 	
 	public static void draw(Line2D line)
 	{
-		int mult = 1530;
+		int mult = (int)Math.sqrt(Main.frameSize[0]*Main.frameSize[0] + Main.frameSize[1]*Main.frameSize[1]);
 		g.setColor(Color.green);
 		g.drawLine((int)line.point.x, (int)line.point.y, (int)(line.point.x + line.vect.unit().x*mult), (int)(line.point.y + line.vect.unit().y*mult));
 		g.drawLine((int)line.point.x, (int)line.point.y, (int)(line.point.x - line.vect.unit().x*mult), (int)(line.point.y - line.vect.unit().y*mult));
@@ -120,7 +126,7 @@ public class Frame {
 	
 	public static void draw(Ray2D ray)
 	{
-		int mult = 1530;
+		int mult = (int)Math.sqrt(Main.frameSize[0]*Main.frameSize[0] + Main.frameSize[1]*Main.frameSize[1]);
 		g.setColor(Color.magenta);
 		g.drawLine((int)ray.origin.x, (int)ray.origin.y, (int)(ray.origin.x + ray.vect.unit().x*mult), (int)(ray.origin.y + ray.vect.unit().y*mult));
 	}

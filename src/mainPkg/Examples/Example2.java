@@ -18,6 +18,8 @@ public class Example2 implements Example {
 			new Sphere(new Point3D(800, 100, 500), 500)};
 	public static Point3D camera = new Point3D(0, 0, 0);
 	
+	public static int MAX_BOUNCES = 0;
+	
 	public Example2()
 	{
 		for(int y = 0; y < Main.frameSize[0]; y++)
@@ -63,7 +65,7 @@ public class Example2 implements Example {
 				
 				int bounces = 0;
 				
-				for(int bounce = 0; bounce < Main.MAX_BOUNCES; bounce++)
+				for(int bounce = 0; bounce <= MAX_BOUNCES; bounce++)
 				{
 					
 					Point3D closestPoint = null;
@@ -92,7 +94,7 @@ public class Example2 implements Example {
 				}
 				
 				if(bounces > 0) {
-					int color = (int)((double)bounces * ((double)255/Main.MAX_BOUNCES));
+					int color = (int)((double)bounces * ((double)255/MAX_BOUNCES));
 					Frame.drawPix(y, z, new Color(color, color, color));
 				}
 				

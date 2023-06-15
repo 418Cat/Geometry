@@ -1,5 +1,7 @@
 package mainPkg.Examples;
 
+import java.awt.Color;
+
 import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
 import MathPkg.Rays.Ray2D;
@@ -10,7 +12,7 @@ import MathPkg.Shapes.Shapes2D.Triangle;
 import MathPkg.Vectors.Vector2D;
 import mainPkg.Frame;
 
-public class Example1 implements Example {
+public class Example3 implements Example {
 	
 	public static Reflector2D[] refs = {
 			new Line2D(new Point2D(0, 900), new Vector2D(1, 0)),
@@ -29,7 +31,10 @@ public class Example1 implements Example {
 	
 	public static Ray2D ray = new Ray2D(A, Aprime);
 	
-	public static int MAX_BOUNCES = 10;
+	public static final int RAY_NB = 500;
+	public static final int FOV = 70;
+	
+	public static int MAX_BOUNCES = 5;
 	
 	public void mouse(int x, int y)
 	{
@@ -53,49 +58,49 @@ public class Example1 implements Example {
 	
 	public void draw()
 	{
-		Frame.clear();
-		Frame.draw(line.point, "O");
+		Frame.clear(Color.black);
 		
-		for(Reflector2D ref : refs)
-		{
-			Frame.draw(ref);
-		}
+		double degreePerRay = (double)FOV/(double)RAY_NB;
 		
-		Ray2D currentRay = ray;
-		Reflector2D lastRef = null;
-		for(int bounce = 0; bounce <= MAX_BOUNCES; bounce++)
+		for(int rayNb = 0; rayNb < RAY_NB; rayNb++)
 		{
-			double dist = Double.MAX_VALUE;
-			Reflector2D closestRef = null;
-			Point2D closestPoint = null;
 			
-			for(Reflector2D ref : refs)
+			Frame.draw(ray);
+			
+			Ray2D currentRay = new Ray2D(ray.origin, ray.vect.turn(-(double)FOV/2 + rayNb*degreePerRay));
+			Reflector2D lastRef = null;
+			for(int bounce = 0; bounce <= MAX_BOUNCES; bounce++)
 			{
-				if(lastRef != ref)
+				double dist = Double.MAX_VALUE;
+				Reflector2D closestRef = null;
+				Point2D closestPoint = null;
+				
+				for(Reflector2D ref : refs)
 				{
-					for(Point2D pnt : ref.intersection(currentRay))
+					if(lastRef != ref)
 					{
-						double tmpDist = currentRay.origin.distance(pnt);
-						if(tmpDist < dist)
+						for(Point2D pnt : ref.intersection(currentRay))
 						{
-							dist = tmpDist;
-							closestRef = ref;
-							closestPoint = pnt;
+							double tmpDist = currentRay.origin.distance(pnt);
+							if(tmpDist < dist)
+							{
+								dist = tmpDist;
+								closestRef = ref;
+								closestPoint = pnt;
+							}
 						}
 					}
 				}
 				
+				if(closestRef == null) break;
+				Frame.drawPix((int)closestPoint.x, (int)closestPoint.y, Color.white);
+				currentRay = closestRef.reflect(currentRay);
+				lastRef = closestRef;
 			}
 			
-			if(closestRef == null)
-			{
-				Frame.draw(currentRay);
-				break;
-			}
-			Frame.draw(new Segment2D(currentRay.origin, closestPoint));
-			currentRay = closestRef.reflect(currentRay);
-			lastRef = closestRef;
 		}
+
+		
 		
 	}
 	

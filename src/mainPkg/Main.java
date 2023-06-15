@@ -6,9 +6,7 @@ public class Main {
 	
 	public static int[] frameSize = new int[] {1000, 1000};
 	
-	public static int MAX_BOUNCES = 10;	
-	
-	public static Example ex = new Example1();
+	public static Example ex = new Example3();
 	
 	public static void main(String[] args) {
 		
