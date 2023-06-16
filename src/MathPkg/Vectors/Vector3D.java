@@ -2,6 +2,7 @@ package MathPkg.Vectors;
 
 import MathPkg.Points.Point3D;
 import MathPkg.Shapes.Shapes3D.Plane;
+import MathPkg.Angle.Angle3D.XYZAngle.XYZAngle;
 
 public class Vector3D {
 	 
@@ -75,6 +76,42 @@ public class Vector3D {
 	public Vector3D add(Vector3D vect)
 	{
 		return(new Vector3D(this.x + vect.x, this.y + vect.y, this.z + vect.z));
+	}
+
+	public Vector3D turnXAxis(double xAxisTurn)
+	{
+		Vector2D YZVect = new Vector2D(this.y, this.z);
+		YZVect = YZVect.turn(xAxisTurn);
+		Vector3D tmpVect = this;
+
+		tmpVect.y = YZVect.x;
+		tmpVect.z = YZVect.y;
+
+		return(tmpVect);
+	}
+
+	public Vector3D turnYAxis(double yAxisTurn)
+	{
+		Vector2D XZVect = new Vector2D(this.x, this.z);
+		XZVect = XZVect.turn(yAxisTurn);
+		Vector3D tmpVect = this;
+
+		tmpVect.x = XZVect.x;
+		tmpVect.z = XZVect.y;
+
+		return(tmpVect);
+	}
+
+	public Vector3D turnZAxis(double ZAxisTurn)
+	{
+		Vector2D XYVect = new Vector2D(this.x, this.y);
+		XYVect = XYVect.turn(ZAcisTurn);
+		Vector3D tmpVect = this;
+
+		tmpVect.x = XYVect.x;
+		tmpVect.y = XYVect.y;
+
+		return(tmpVect);
 	}
 	
 }
