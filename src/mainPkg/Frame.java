@@ -19,6 +19,7 @@ import MathPkg.Vectors.Vector2D;
 public class Frame {
 	
 	public static Graphics g;
+	public static double ZOOM = 1; 
 	
 	public static void initFrame(int sizeX, int sizeY, int locX, int locY)
 	{
@@ -63,7 +64,7 @@ public class Frame {
 	public static void drawPix(int x, int y, Color color)
 	{
 		g.setColor(color);
-		g.fillRect(x, y, 1, 1);
+		g.fillRect((int)((float)(x*ZOOM)), (int)((float)(y*ZOOM)), 1, 1);
 	}
 	
 	public static void draw(Reflector2D ref)
@@ -85,31 +86,31 @@ public class Frame {
 	public static void draw(Point2D a, String name)
 	{
 		g.setColor(Color.red);
-		g.fillOval((int)a.x - 5, (int)a.y - 5, 10, 10);
+		g.fillOval((int)((a.x - 5)*ZOOM), (int)((a.y - 5)*ZOOM), (int)((10*ZOOM)), (int)((10*ZOOM)));
 		
 		g.setColor(Color.red);
-		g.drawChars(name.toCharArray(), 0, name.length(), (int)a.x - 3, (int)a.y + 20);
+		g.drawChars(name.toCharArray(), 0, name.length(), (int)((a.x - 3)*ZOOM), (int)((a.y + 20)*ZOOM));
 	}
 	
 	public static void draw(Point2D pnt, Vector2D vect)
 	{
 		g.setColor(Color.blue);
-		g.drawLine((int)pnt.x, (int)pnt.y, (int)(pnt.x + vect.x), (int)(pnt.y + vect.y));
-		g.fillOval((int)(pnt.x + vect.x) - 3, (int)(pnt.y + vect.y)-3, 6, 6);
+		g.drawLine((int)(pnt.x*ZOOM), (int)(pnt.y*ZOOM), (int)((pnt.x + vect.x)*ZOOM), (int)((pnt.y + vect.y)*ZOOM));
+		g.fillOval((int)(((pnt.x + vect.x) - 3)*ZOOM), (int)(((pnt.y + vect.y)-3)*ZOOM), (int)(float)(6*ZOOM), (int)(float)(6*ZOOM));
 	}
 	
 	public static void draw(Line2D line)
 	{
-		int mult = (int)Math.sqrt(Main.frameSize[0]*Main.frameSize[0] + Main.frameSize[1]*Main.frameSize[1]);
+		int mult = (int)(Math.sqrt(Main.frameSize[0]*Main.frameSize[0] + Main.frameSize[1]*Main.frameSize[1])/ZOOM);
 		g.setColor(Color.green);
-		g.drawLine((int)line.point.x, (int)line.point.y, (int)(line.point.x + line.vect.unit().x*mult), (int)(line.point.y + line.vect.unit().y*mult));
-		g.drawLine((int)line.point.x, (int)line.point.y, (int)(line.point.x - line.vect.unit().x*mult), (int)(line.point.y - line.vect.unit().y*mult));
+		g.drawLine((int)(line.point.x*ZOOM), (int)(line.point.y*ZOOM), (int)((line.point.x + line.vect.unit().x*mult)*ZOOM), (int)((line.point.y + line.vect.unit().y*mult)*ZOOM));
+		g.drawLine((int)(line.point.x*ZOOM), (int)(line.point.y*ZOOM), (int)((line.point.x - line.vect.unit().x*mult)*ZOOM), (int)((line.point.y - line.vect.unit().y*mult)*ZOOM));
 	}
 	
 	public static void draw(Circle circle)
 	{
 		g.setColor(Color.pink);
-		g.drawOval((int)(circle.center.x - circle.radius), (int)(circle.center.y - circle.radius), (int)circle.radius*2, (int)circle.radius*2);
+		g.drawOval((int)((circle.center.x - circle.radius)*ZOOM), (int)((circle.center.y - circle.radius)*ZOOM), (int)((circle.radius*2)*ZOOM), (int)((circle.radius*2)*ZOOM));
 	}
 	
 	public static void draw(Segment2D segA, Segment2D segB, int radius)
@@ -121,14 +122,14 @@ public class Frame {
 	public static void draw(Segment2D segment)
 	{
 		g.setColor(Color.gray);
-		g.drawLine((int)segment.A.x, (int)segment.A.y, (int)segment.B.x, (int)segment.B.y);
+		g.drawLine((int)(segment.A.x*ZOOM), (int)(segment.A.y*ZOOM), (int)(segment.B.x*ZOOM), (int)(segment.B.y*ZOOM));
 	}
 	
 	public static void draw(Ray2D ray)
 	{
-		int mult = (int)Math.sqrt(Main.frameSize[0]*Main.frameSize[0] + Main.frameSize[1]*Main.frameSize[1]);
+		int mult = (int)((Math.sqrt(Main.frameSize[0]*Main.frameSize[0] + Main.frameSize[1]*Main.frameSize[1])/ZOOM));
 		g.setColor(Color.magenta);
-		g.drawLine((int)ray.origin.x, (int)ray.origin.y, (int)(ray.origin.x + ray.vect.unit().x*mult), (int)(ray.origin.y + ray.vect.unit().y*mult));
+		g.drawLine((int)(ray.origin.x*ZOOM), (int)(ray.origin.y*ZOOM), (int)((ray.origin.x + ray.vect.unit().x*mult)*ZOOM), (int)((ray.origin.y + ray.vect.unit().y*mult)*ZOOM));
 	}
 
 }

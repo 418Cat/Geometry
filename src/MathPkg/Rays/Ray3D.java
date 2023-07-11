@@ -27,9 +27,11 @@ public class Ray3D {
 		
 		if(angle > 90) return this.origin;
 		
-		double distOriginProjPnt = new Vector3D(this.origin, pnt).norm() * Math.cos(angle * Math.PI/180);
+		double distPntRay = pnt.distance(this);
+		double distPntRayOrigin = pnt.distance(this.origin);
+		double distProjRayOrigin = Math.sqrt(distPntRayOrigin*distPntRayOrigin + distPntRay*distPntRay);
 		
-		return(this.vect.unit().multiply(distOriginProjPnt).transform(pnt));
+		return(this.vect.unit().multiply(distProjRayOrigin).transform(pnt));
 	}
 
 }

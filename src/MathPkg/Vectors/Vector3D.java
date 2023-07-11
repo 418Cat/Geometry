@@ -2,7 +2,6 @@ package MathPkg.Vectors;
 
 import MathPkg.Points.Point3D;
 import MathPkg.Shapes.Shapes3D.Plane;
-import MathPkg.Angle.Angle3D.XYZAngle.XYZAngle;
 
 public class Vector3D {
 	 
@@ -105,13 +104,12 @@ public class Vector3D {
 	public Vector3D turnZAxis(double ZAxisTurn)
 	{
 		Vector2D XYVect = new Vector2D(this.x, this.y);
-		XYVect = XYVect.turn(ZAcisTurn);
+		XYVect = XYVect.turn(ZAxisTurn);
 		Vector3D tmpVect = this;
 
 		tmpVect.x = XYVect.x;
 		tmpVect.y = XYVect.y;
 
 		return(tmpVect);
-	}
-	
+	}	
 }

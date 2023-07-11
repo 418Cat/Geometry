@@ -66,6 +66,7 @@ public class Circle implements Reflector2D {
 	
 	public int intersectionState(Ray2D ray)
 	{
+		if(ray.origin.distance(this.center) < this.radius) return 0;
 		return(center.distance(ray) == radius ? 0 : center.distance(ray) < radius ? 1 : -1);
 	}
 	@Override
@@ -88,8 +89,8 @@ public class Circle implements Reflector2D {
 	
 	public Point2D projection(Point2D point)
 	{
-		Vector2D tmpVect = new Vector2D(point, this.center);
-		return(tmpVect.multiply((radius)/tmpVect.norm()).negate().transform(this.center));
+		Vector2D tmpVect = new Vector2D(this.center, point);
+		return(tmpVect.unit().multiply(radius > tmpVect.norm() ? tmpVect.norm() : radius).transform(this.center));
 	}
 	
 	public Point2D projection(Ray2D ray)
@@ -121,17 +122,26 @@ public class Circle implements Reflector2D {
 	{
 		if(!this.intersects(ray)) return(new Point2D[] {});
 		
-		if(this.intersectionState(ray) == 0) return(new Point2D[] {projection(ray.projection(center))});
-		
 		Point2D tmpPoint = ray.projection(this.center);
+		
+		if(this.intersectionState(ray) == 0)
+		{
+			if(tmpPoint.distance(this.center) > this.radius) return(new Point2D[] {tmpPoint});
+			
+			/**
+			 * If the ray origin is in the circle and the ray is pointing outwards,
+			 * the projected point will be closer to the border of the circle than the radius,
+			 * so transforming the projected point will result in a point outside of the radius.
+			 * So i'm using a line and seeing which point is in the axis of the ray to compensate for this
+			 */
+			Point2D[] lineIntersect = this.intersection(new Line2D(ray));
+			return(new Point2D[] {AbsAngle.angle(ray, lineIntersect[0]) < 90 ? lineIntersect[0] : lineIntersect[1]});
+		}
 		
 		Point2D[] intersectList = {
 				ray.vect.unit().multiply(Math.sqrt(Math.pow(this.radius, 2) - Math.pow(tmpPoint.distance(this.center), 2))).transform(tmpPoint),
 				ray.vect.unit().multiply(Math.sqrt(Math.pow(this.radius, 2) - Math.pow(tmpPoint.distance(this.center), 2))).negate().transform(tmpPoint)
 		};
-		
-		if(AbsAngle.angle(ray, intersectList[0]) > 90) return new Point2D[] {intersectList[1]};
-		if(AbsAngle.angle(ray, intersectList[1]) > 90) return new Point2D[] {intersectList[0]};
 		
 		return intersectList;
 	}
@@ -140,11 +150,11 @@ public class Circle implements Reflector2D {
 	public Ray2D reflect(Ray2D ray) {
 		Point2D[] rayIntersect = this.intersection(ray);
 		
-		if(rayIntersect.length < 1) return new Ray2D(new Point2D(0, 0), new Vector2D(0, 0));
+		if(rayIntersect.length < 1) return null;
 
 		Point2D closestPoint = rayIntersect.length > 1 ? rayIntersect[0].distance(ray.origin) > rayIntersect[1].distance(ray.origin) ? rayIntersect[1] : rayIntersect[0] : rayIntersect[0];
-		
 		Line2D normLine = new Line2D(this.center, closestPoint);
+		
 		return(new Ray2D(closestPoint, normLine.symmetry(new Segment2D(closestPoint, ray.origin)).B));
 	}
 

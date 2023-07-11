@@ -29,7 +29,7 @@ public class Example1 implements Example {
 	
 	public static Ray2D ray = new Ray2D(A, Aprime);
 	
-	public static int MAX_BOUNCES = 10;
+	public static int MAX_BOUNCES = 3;
 	
 	public void mouse(int x, int y)
 	{
@@ -73,8 +73,10 @@ public class Example1 implements Example {
 			{
 				if(lastRef != ref)
 				{
+					//if(ref.getClass() == Circle.class) Frame.draw(((Circle)ref).projection(currentRay), " ");
 					for(Point2D pnt : ref.intersection(currentRay))
 					{
+						//Frame.draw(pnt, " ");
 						double tmpDist = currentRay.origin.distance(pnt);
 						if(tmpDist < dist)
 						{
