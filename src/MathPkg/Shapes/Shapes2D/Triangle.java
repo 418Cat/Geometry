@@ -2,9 +2,11 @@ package MathPkg.Shapes.Shapes2D;
 
 import java.util.ArrayList;
 
+import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
 import MathPkg.Rays.Ray2D;
 import MathPkg.Segments.Segment2D;
+import mainPkg.Frame;
 
 public class Triangle implements Reflector2D {
 	
@@ -34,6 +36,13 @@ public class Triangle implements Reflector2D {
 		for(Segment2D seg : this.segments()) if(seg.intersects(ray)) return true;
 		
 		return(false);
+	}
+	
+	public boolean intersects(Circle circ)
+	{
+		for(Segment2D seg : this.segments()) if(circ.intersects(seg)) return true;
+		
+		return false;
 	}
 
 	@Override
@@ -68,6 +77,56 @@ public class Triangle implements Reflector2D {
 		for(Segment2D seg : this.segments())
 		{
 			for(Point2D pnt : seg.intersection(ray)) intersectionsAL.add(pnt);
+		}
+		
+		Point2D[] intersectArr = new Point2D[intersectionsAL.size()];
+		
+		for(int i = 0; i < intersectArr.length; i++)
+		{
+			intersectArr[i] = intersectionsAL.get(i);
+		}
+		
+		return(intersectArr);
+	}
+	
+	public Point2D[] intersection(Circle circ)
+	{
+		ArrayList<Point2D> intersectionsAL = new ArrayList<Point2D>();
+		
+		for(Segment2D seg : this.segments())
+		{
+			Point2D[] inters = circ.intersection(seg);
+			
+			for(Point2D pnt : inters)
+			{
+				intersectionsAL.add(pnt);
+			}
+		}
+		
+		Point2D[] intersectArr = new Point2D[intersectionsAL.size()];
+		
+		for(int i = 0; i < intersectArr.length; i++)
+		{
+			intersectArr[i] = intersectionsAL.get(i);
+		}
+		
+		return(intersectArr);
+	}
+	
+	public Point2D[] intersection(Line2D line)
+	{
+		ArrayList<Point2D> intersectionsAL = new ArrayList<Point2D>();
+		
+		for(Segment2D seg : this.segments())
+		{
+			
+			for(Point2D pnt : line.intersection(new Line2D(seg)))
+			{
+				if(seg.PointBetween(pnt))
+				{
+					intersectionsAL.add(pnt);
+				}
+			}
 		}
 		
 		Point2D[] intersectArr = new Point2D[intersectionsAL.size()];

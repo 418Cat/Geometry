@@ -5,6 +5,7 @@ import MathPkg.Angle.Angle2D.Angle;
 import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
 import MathPkg.Rays.Ray2D;
+import MathPkg.Shapes.Shapes2D.Circle;
 import MathPkg.Shapes.Shapes2D.Reflector2D;
 import MathPkg.Vectors.Vector2D;
 
@@ -101,6 +102,20 @@ public class Segment2D implements Reflector2D {
 		if(!this.intersects(ray)) return new Point2D[] {};
 		
 		return(new Line2D(this).intersection(ray));
+	}
+	
+	public Point2D[] intersection(Line2D line)
+	{
+		Point2D pnt = line.intersection(new Line2D(this))[0];
+		
+		if(this.PointBetween(pnt)) return new Point2D[] {pnt};
+		
+		return new Point2D[] {};
+	}
+	
+	public Point2D[] intersection(Circle circ)
+	{
+		return circ.intersection(this);
 	}
 
 }

@@ -1,5 +1,6 @@
 package MathPkg.Shapes.Shapes2D;
 
+import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
 import MathPkg.Rays.Ray2D;
 
@@ -26,6 +27,9 @@ public interface Reflector2D {
 		}
 		return(closestPoint);
 	}
+	
+	Point2D[] intersection(Circle circ);
+	Point2D[] intersection(Line2D line);
 	
 	
 }

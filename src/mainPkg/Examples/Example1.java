@@ -20,7 +20,9 @@ public class Example1 implements Example {
 			new Circle(new Point2D(800, 300), 200),
 			new Segment2D(new Point2D(100, 100), new Point2D(900, 200)),
 			new Triangle(new Point2D(200, 200), new Point2D(300, 250), new Point2D(350, 500)),
-			new Triangle(new Point2D(950, 850), new Point2D(700, 800), new Point2D(900, 850))
+			new Triangle(new Point2D(950, 850), new Point2D(700, 800), new Point2D(900, 850)),
+			new Line2D(new Point2D(150, 0), new Point2D(10, 800)),
+			new Line2D(new Point2D(990, 0), new Point2D(990, 800)),
 	};
 	
 	public static Point2D A = new Point2D(500, 500);
@@ -28,6 +30,8 @@ public class Example1 implements Example {
 	public static Line2D line = new Line2D(A, Aprime);
 	
 	public static Ray2D ray = new Ray2D(A, Aprime);
+	public static int fov = 60;
+	public static int rayNb = 60;
 	
 	public static int MAX_BOUNCES = 3;
 	
@@ -53,52 +57,56 @@ public class Example1 implements Example {
 	
 	public void draw()
 	{
-		Frame.clear();
 		Frame.draw(line.point, "O");
 		
-		for(Reflector2D ref : refs)
+		/*for(Reflector2D ref : refs)
 		{
 			Frame.draw(ref);
-		}
+		}*/
 		
-		Ray2D currentRay = ray;
-		Reflector2D lastRef = null;
-		for(int bounce = 0; bounce <= MAX_BOUNCES; bounce++)
+		float rayPerDeg = (float)fov/(float)rayNb;
+		
+		for(int i = 0; i < rayNb; i++)
 		{
-			double dist = Double.MAX_VALUE;
-			Reflector2D closestRef = null;
-			Point2D closestPoint = null;
+			Ray2D currentRay = new Ray2D(ray.origin, ray.vect);
+			currentRay.vect = currentRay.vect.turn(i * rayPerDeg - fov/2);
 			
-			for(Reflector2D ref : refs)
+			Reflector2D lastRef = null;
+			for(int bounce = 0; bounce <= MAX_BOUNCES; bounce++)
 			{
-				if(lastRef != ref)
+				double dist = Double.MAX_VALUE;
+				Reflector2D closestRef = null;
+				Point2D closestPoint = null;
+				
+				for(Reflector2D ref : refs)
 				{
-					//if(ref.getClass() == Circle.class) Frame.draw(((Circle)ref).projection(currentRay), " ");
-					for(Point2D pnt : ref.intersection(currentRay))
+					if(lastRef != ref)
 					{
-						//Frame.draw(pnt, " ");
-						double tmpDist = currentRay.origin.distance(pnt);
-						if(tmpDist < dist)
+						//if(ref.getClass() == Circle.class) Frame.draw(((Circle)ref).projection(currentRay), " ");
+						for(Point2D pnt : ref.intersection(currentRay))
 						{
-							dist = tmpDist;
-							closestRef = ref;
-							closestPoint = pnt;
+							//Frame.draw(pnt, " ");
+							double tmpDist = currentRay.origin.distance(pnt);
+							if(tmpDist < dist)
+							{
+								dist = tmpDist;
+								closestRef = ref;
+								closestPoint = pnt;
+							}
 						}
 					}
+					
 				}
-				
+				if(closestRef == null)
+				{
+					Frame.draw(currentRay);	
+					break;
+				}
+				Frame.draw(new Segment2D(currentRay.origin, closestPoint));
+				currentRay = closestRef.reflect(currentRay);
+				lastRef = closestRef;
 			}
-			
-			if(closestRef == null)
-			{
-				Frame.draw(currentRay);
-				break;
-			}
-			Frame.draw(new Segment2D(currentRay.origin, closestPoint));
-			currentRay = closestRef.reflect(currentRay);
-			lastRef = closestRef;
 		}
-		
 	}
 	
 }

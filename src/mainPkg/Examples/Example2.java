@@ -52,7 +52,7 @@ public class Example2 implements Example {
 	public void draw()
 	{
 		//System.out.print("\rcam (" + camera.x + ", " + camera.y + ", " + camera.z + ");");
-		Frame.clear();
+		Frame.start();
 		
 		for(int y = 0; y < Main.frameSize[0]; y++)
 		{
@@ -107,6 +107,7 @@ public class Example2 implements Example {
 				
 			}
 		}
+		Frame.end();
 	}
 
 }

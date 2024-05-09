@@ -15,8 +15,6 @@ public class MousePos implements MouseMotionListener {
 	public void mouseMoved(MouseEvent e) {
 		
 		Main.ex.mouse((int)(e.getX()/Frame.ZOOM), (int)(e.getY()/Frame.ZOOM));
-		Main.ex.draw();
-		
 	}
 
 }

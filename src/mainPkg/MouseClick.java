@@ -8,7 +8,6 @@ public class MouseClick implements MouseListener {
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		Main.ex.click((int)(e.getX()/Frame.ZOOM), (int)(e.getY()/Frame.ZOOM));
-		Main.ex.draw();
 	}
 
 	@Override

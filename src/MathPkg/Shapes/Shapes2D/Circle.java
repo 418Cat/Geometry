@@ -1,6 +1,9 @@
 package MathPkg.Shapes.Shapes2D;
 
+import java.util.ArrayList;
+
 import MathPkg.Angle.Angle2D.AbsAngle;
+import MathPkg.Angle.Angle2D.Angle;
 import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
 import MathPkg.Rays.Ray2D;
@@ -120,7 +123,7 @@ public class Circle implements Reflector2D {
 	
 	public Point2D[] intersection(Ray2D ray)
 	{
-		if(!this.intersects(ray)) return(new Point2D[] {});
+		if(ray == null || !this.intersects(ray)) return(new Point2D[] {});
 		
 		Point2D tmpPoint = ray.projection(this.center);
 		
@@ -135,6 +138,9 @@ public class Circle implements Reflector2D {
 			 * So i'm using a line and seeing which point is in the axis of the ray to compensate for this
 			 */
 			Point2D[] lineIntersect = this.intersection(new Line2D(ray));
+			if(lineIntersect.length == 0) return new Point2D[] {};
+			if(lineIntersect.length == 1) return new Point2D[] {lineIntersect[0]};
+			
 			return(new Point2D[] {AbsAngle.angle(ray, lineIntersect[0]) < 90 ? lineIntersect[0] : lineIntersect[1]});
 		}
 		
@@ -144,6 +150,43 @@ public class Circle implements Reflector2D {
 		};
 		
 		return intersectList;
+	}
+	
+	public Point2D[] intersection(Circle circ)
+	{
+		if(this.intersectionState(circ) != 1) return(new Point2D[] {});
+		
+		Vector2D vec = new Vector2D(center, circ.center).unit().multiply(radius + 0.5 * ( center.distance(circ.center) - ( radius + circ.radius ) ));
+		// vec(P1, P2).unit() * (R1 + 0.5(D - (R1 + R2)))
+		// Multiply the unit vector formed by (P1, P2) by the radius to have a point on the edge of the circle, then subtract half of the difference.
+		// This gives us a point on the line formed by the two intersecting circles
+		
+		Line2D line = new Line2D(vec.transform(center), vec.normalVectors()[0]);
+		
+		return this.intersection(line);
+	}
+	
+	public Point2D[] intersection(Segment2D seg)
+	{
+		//if(!this.intersects(seg)) return new Point2D[] {};
+		
+		Point2D[] intersectLine = this.intersection(new Line2D(seg));
+		ArrayList<Point2D> arr = new ArrayList<Point2D>();
+		
+		for(Point2D pnt : intersectLine)
+		{
+			if(seg.PointBetween(pnt))
+			{
+				arr.add(pnt);
+			}
+		}
+		
+		Point2D[] inters = new Point2D[arr.size()];
+		
+		for(int i = 0; i < arr.size(); i++) {inters[i] = arr.get(i);}
+		
+		return inters;
+		
 	}
 
 	@Override

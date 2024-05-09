@@ -2,6 +2,7 @@ package mainPkg;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.image.BufferStrategy;
 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
@@ -20,6 +21,14 @@ public class Frame {
 	
 	public static Graphics g;
 	public static double ZOOM = 1; 
+	public static JFrame frame;
+	public static BufferStrategy bufferStrategy;
+	
+	private static long start;
+	
+	private static float fpsSum;
+	private static int fpsReadings = 0;
+	private static int fpsReadingsLimit = 100;
 	
 	public static void initFrame(int sizeX, int sizeY, int locX, int locY)
 	{
@@ -27,14 +36,17 @@ public class Frame {
 		MouseClick mC = new MouseClick();
 		MouseScroll mS = new MouseScroll();
 		
-		JFrame frame = new JFrame("Math test");
+		frame = new JFrame("Math test");
 		frame.setLocation(locX, locY);
 		frame.setSize(sizeX, sizeY);
 		frame.setUndecorated(true);
 		frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 		frame.setVisible(true);
 		
-		g = frame.getGraphics();
+		Frame.frame.getContentPane().setIgnoreRepaint(true);
+		Frame.frame.createBufferStrategy(2);
+		
+		bufferStrategy = frame.getBufferStrategy();
 		
 		frame.addMouseMotionListener(mP);
 		frame.addMouseListener(mC);
@@ -50,9 +62,37 @@ public class Frame {
 		}
 	}
 	
-	public static void clear()
+	public static void start()
 	{
+		g = bufferStrategy.getDrawGraphics();
 		g.clearRect(0, 0, Main.frameSize[0], Main.frameSize[1]);
+		
+		start = System.nanoTime();
+	}
+	
+	public static void end()
+	{
+		Long deltaNs = System.nanoTime() - start;
+		fpsSum += (1000_000_000. / deltaNs);
+		fpsReadings++;
+		
+		double ms = 0.000001 * deltaNs;
+		
+		String frameTime = String.format("%.2fms", ms);
+		String fps = String.format("%.2ffps", fpsSum / fpsReadings);
+		
+		g.setColor(Color.red);
+		g.drawChars(frameTime.toCharArray(), 0, frameTime.length(), 10, 20);
+		g.drawChars(fps.toCharArray(), 0, fps.length(), 10, 40);
+		
+		if(fpsReadings >= fpsReadingsLimit)
+		{
+			fpsSum = 0;
+			fpsReadings = 0;
+		}
+		
+		g.dispose();
+		bufferStrategy.show();
 	}
 	
 	public static void clear(Color color)
@@ -97,6 +137,10 @@ public class Frame {
 		g.setColor(Color.blue);
 		g.drawLine((int)(pnt.x*ZOOM), (int)(pnt.y*ZOOM), (int)((pnt.x + vect.x)*ZOOM), (int)((pnt.y + vect.y)*ZOOM));
 		g.fillOval((int)(((pnt.x + vect.x) - 3)*ZOOM), (int)(((pnt.y + vect.y)-3)*ZOOM), (int)(float)(6*ZOOM), (int)(float)(6*ZOOM));
+		
+		Point2D textCoords = vect.multiply(0.5).transform(vect.normalVectors()[1].multiply(10.0).transform(pnt));
+		g.setColor(Color.black);
+		g.drawChars((String.valueOf(vect.x).substring(0, 5) + ", " + String.valueOf(vect.y).substring(0, 5)).toCharArray(), 0, 12, (int)textCoords.x, (int)textCoords.y);
 	}
 	
 	public static void draw(Line2D line)
@@ -123,6 +167,13 @@ public class Frame {
 	{
 		g.setColor(Color.gray);
 		g.drawLine((int)(segment.A.x*ZOOM), (int)(segment.A.y*ZOOM), (int)(segment.B.x*ZOOM), (int)(segment.B.y*ZOOM));
+		
+		Vector2D vecNorms[] = new Vector2D(segment).normalVectors();
+		Segment2D seg1 = new Segment2D(vecNorms[0].transform(segment.A), vecNorms[0].transform(segment.B));
+		Segment2D seg2 = new Segment2D(vecNorms[0].transform(segment.A), vecNorms[0].transform(segment.B));
+		
+		g.drawLine((int)(seg1.A.x*ZOOM), (int)(seg1.A.y*ZOOM), (int)(seg1.B.x*ZOOM), (int)(seg1.B.y*ZOOM));
+		g.drawLine((int)(seg2.A.x*ZOOM), (int)(seg2.A.y*ZOOM), (int)(seg2.B.x*ZOOM), (int)(seg2.B.y*ZOOM));
 	}
 	
 	public static void draw(Ray2D ray)

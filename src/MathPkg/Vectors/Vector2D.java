@@ -138,12 +138,11 @@ public class Vector2D {
 	 * @return a new instance of this vector turned by X degrees
 	 */
 	public Vector2D turn(double angle)
-	{
-		double thisAngle = Angle.angle(this) * Math.PI/180;
-		double x = this.norm() * (Math.cos(angle * Math.PI/180 + thisAngle));
-		double y = this.norm() * (Math.sin(angle * Math.PI/180 + thisAngle));
-		
-		return(new Vector2D(x, y));
+	{		
+		return(new Vector2D(
+				this.x * Math.cos(angle * Math.PI/180) - this.y * Math.sin(angle * Math.PI/180),
+				this.x * Math.sin(angle * Math.PI/180) + this.y * Math.cos(angle * Math.PI/180)
+				));
 	}
 	
 	/**

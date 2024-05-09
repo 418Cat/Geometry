@@ -8,7 +8,6 @@ public class MouseScroll implements MouseWheelListener {
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		Main.ex.scroll(e.getWheelRotation());
-		Main.ex.draw();
 	}
 
 }

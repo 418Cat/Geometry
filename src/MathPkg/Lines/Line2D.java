@@ -4,6 +4,7 @@ import MathPkg.Angle.Angle2D.Angle;
 import MathPkg.Points.Point2D;
 import MathPkg.Rays.Ray2D;
 import MathPkg.Segments.Segment2D;
+import MathPkg.Shapes.Shapes2D.Circle;
 import MathPkg.Shapes.Shapes2D.Reflector2D;
 import MathPkg.Vectors.Vector2D;
 
@@ -75,7 +76,7 @@ public class Line2D implements Reflector2D {
 		return(pnt.distance(this) == 0);
 	}
 	
-	public Point2D intersection(Line2D line)
+	public Point2D[] intersection(Line2D line)
 	{
 		Point2D proj = line.projection(this.point);
 		
@@ -88,7 +89,7 @@ public class Line2D implements Reflector2D {
 		
 		double dist = pointToProj.norm()/Math.cos(angleIntersectPointProj * Math.PI/180);
 		
-		return(angleInf90 ? this.vect.unit().multiply(dist).transform(this.point) : this.vect.negate().unit().multiply(dist).transform(this.point));
+		return(angleInf90 ? new Point2D[] {this.vect.unit().multiply(dist).transform(this.point)} : new Point2D[] {this.vect.negate().unit().multiply(dist).transform(this.point)});
 	}
 	
 	public Point2D symmetry(Point2D pnt)
@@ -121,7 +122,12 @@ public class Line2D implements Reflector2D {
 	public Point2D[] intersection(Ray2D ray) {
 		if(!this.intersects(ray)) return(new Point2D[] {});
 
-		return(new Point2D[] {this.intersection(new Line2D(ray))});
+		return(new Point2D[] {this.intersection(new Line2D(ray))[0]});
+	}
+
+	@Override
+	public Point2D[] intersection(Circle circ) {
+		return circ.intersection(this);
 	}
 
 }
