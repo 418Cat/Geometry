@@ -17,6 +17,8 @@ public class Main {
 			Frame.start();
 			ex.draw();
 			Frame.end();
+			
+			ex.resolveQueue();
 		}
 		
 	}

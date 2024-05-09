@@ -6,7 +6,6 @@ import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
 import MathPkg.Rays.Ray2D;
 import MathPkg.Segments.Segment2D;
-import mainPkg.Frame;
 
 public class Triangle implements Reflector2D {
 	

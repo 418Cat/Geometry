@@ -1,5 +1,7 @@
 package mainPkg.Examples;
 
+import java.util.ArrayList;
+
 import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
 import MathPkg.Rays.Ray2D;
@@ -12,6 +14,8 @@ import mainPkg.Frame;
 
 public class Example1 implements Example {
 	
+	private ArrayList<eventType> queue = new ArrayList<>();
+	
 	public static Reflector2D[] refs = {
 			new Line2D(new Point2D(0, 900), new Vector2D(1, 0)),
 			new Circle(new Point2D(300, 300), 100),
@@ -21,8 +25,6 @@ public class Example1 implements Example {
 			new Segment2D(new Point2D(100, 100), new Point2D(900, 200)),
 			new Triangle(new Point2D(200, 200), new Point2D(300, 250), new Point2D(350, 500)),
 			new Triangle(new Point2D(950, 850), new Point2D(700, 800), new Point2D(900, 850)),
-			new Line2D(new Point2D(150, 0), new Point2D(10, 800)),
-			new Line2D(new Point2D(990, 0), new Point2D(990, 800)),
 	};
 	
 	public static Point2D A = new Point2D(500, 500);
@@ -35,34 +37,56 @@ public class Example1 implements Example {
 	
 	public static int MAX_BOUNCES = 3;
 	
-	public void mouse(int x, int y)
+	public void addToQueue(Example.eventType event)
 	{
-		Aprime.x = x;
-		Aprime.y = y;
-		line.vect = new Vector2D(line.point, Aprime).unit();
-		ray.vect = line.vect;
+		queue.add(event);
 	}
 	
-	public void scroll(int scrollAmount)
+	private void resolveEvent(Example.eventType event)
 	{
-		MAX_BOUNCES+=scrollAmount;
-		MAX_BOUNCES = MAX_BOUNCES < 0 ? 0 : MAX_BOUNCES;
+		if(event == null) return;
+		switch (event) {
+			case click:
+			{
+				int values[] = event.getValues();
+				ray.origin.x = values[0];
+				ray.origin.y = values[1];
+				break;
+			}
+			case mouse:
+			{
+				int values[] = event.getValues();
+				Aprime.x = values[0];
+				Aprime.y = values[1];
+				line.vect = new Vector2D(line.point, Aprime).unit();
+				ray.vect = line.vect;
+				break;
+			}
+			case scroll:
+			{
+				int scrollAmount = event.getValues()[0];
+				MAX_BOUNCES+=scrollAmount;
+				MAX_BOUNCES = MAX_BOUNCES < 0 ? 0 : MAX_BOUNCES;
+				break;
+			}
+		}
 	}
 	
-	public void click(int x, int y)
+	@SuppressWarnings("unchecked")
+	public void resolveQueue()
 	{
-		ray.origin.x = x;
-		ray.origin.y = y;
+		((ArrayList<eventType>)queue.clone()).forEach((ev) -> resolveEvent(ev));
+		queue.clear();
 	}
 	
 	public void draw()
 	{
 		Frame.draw(line.point, "O");
 		
-		/*for(Reflector2D ref : refs)
+		for(Reflector2D ref : refs)
 		{
 			Frame.draw(ref);
-		}*/
+		}
 		
 		float rayPerDeg = (float)fov/(float)rayNb;
 		

@@ -1,6 +1,7 @@
 package mainPkg.Examples;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 import MathPkg.Points.Point3D;
 import MathPkg.Rays.Ray3D;
@@ -11,6 +12,8 @@ import mainPkg.Frame;
 import mainPkg.Main;
 
 public class Example2 implements Example {
+	
+	ArrayList<eventType> queue = new ArrayList<>();
 	
 	public static Ray3D[][] rayFrame = new Ray3D[Main.frameSize[0]][Main.frameSize[1]];
 	public static Reflector3D[] refs = new Reflector3D[] {//new Sphere(new Point3D(1300, 900, 0), 300),
@@ -32,21 +35,41 @@ public class Example2 implements Example {
 		}
 	}
 	
-	public void mouse(int x, int y)
+	public void addToQueue(eventType ev)
 	{
-		camera.y = -Main.frameSize[0]/2 + x;
-		camera.z = -Main.frameSize[1]/2 + y;
+		queue.add(ev);
 	}
 	
-	public void scroll(int scrollAmount)
+	private void resolveEvent(eventType event)
 	{
-		camera.x += scrollAmount*50;
-		System.out.println("went forward " + scrollAmount*50);
+		if(event == null) return;
+		switch (event) {
+		case click:
+		{
+			break;
+		}
+		case mouse:
+		{
+			int values[] = event.getValues();
+			camera.y = -Main.frameSize[0]/2 + values[0];
+			camera.z = -Main.frameSize[1]/2 + values[1];
+			break;
+		}
+		case scroll:
+		{
+			int scrollAmount = event.getValues()[0];
+			camera.x += scrollAmount*50;
+			System.out.println("went forward " + scrollAmount*50);
+			break;
+		}
+	}
 	}
 	
-	public void click(int x, int y)
+	@SuppressWarnings("unchecked")
+	public void resolveQueue()
 	{
-		
+		((ArrayList<eventType>)queue.clone()).forEach((ev) -> resolveEvent(ev));
+		queue.clear();
 	}
 	
 	public void draw()

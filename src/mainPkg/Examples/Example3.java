@@ -1,6 +1,7 @@
 package mainPkg.Examples;
 
 import java.awt.Color;
+import java.util.ArrayList;
 
 import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
@@ -9,8 +10,11 @@ import MathPkg.Segments.Segment2D;
 import MathPkg.Shapes.Shapes2D.Circle;
 import MathPkg.Shapes.Shapes2D.Reflector2D;
 import mainPkg.Frame;
+import mainPkg.Main;
 
 public class Example3 implements Example {
+	
+	private ArrayList<eventType> queue = new ArrayList<>();
 	
 	/*public static Reflector2D[] refs = {
 			new Line2D(new Point2D(0, 900), new Vector2D(1, 0)),
@@ -49,26 +53,44 @@ public class Example3 implements Example {
 		}
 	}
 	
-	public void mouse(int x, int y)
+	public void addToQueue(eventType ev)
 	{
-		/*Aprime.x = x;
-		Aprime.y = y;
-		line.vect = new Vector2D(line.point, Aprime).unit();
-		ray.vect = line.vect;*/
-		ray.origin.x = x;
-		ray.origin.y = y;
+		queue.add(ev);
 	}
 	
-	public void scroll(int scrollAmount)
+	private void resolveEvent(eventType event)
 	{
-		MAX_BOUNCES+=scrollAmount;
-		MAX_BOUNCES = MAX_BOUNCES < 0 ? 0 : MAX_BOUNCES;
+		if(event == null) return;
+		switch (event) {
+		case click:
+		{
+			int values[] = event.getValues();
+			ray.origin.x = values[0];
+			ray.origin.y = values[1];
+			break;
+		}
+		case mouse:
+		{
+			int values[] = event.getValues();
+			ray.origin.x = -Main.frameSize[0]/2 + values[0];
+			ray.origin.y = -Main.frameSize[1]/2 + values[1];
+			break;
+		}
+		case scroll:
+		{
+			int scrollAmount = event.getValues()[0];
+			MAX_BOUNCES+=scrollAmount;
+			MAX_BOUNCES = MAX_BOUNCES < 0 ? 0 : MAX_BOUNCES;
+			break;
+		}
+	}
 	}
 	
-	public void click(int x, int y)
+	@SuppressWarnings("unchecked")
+	public void resolveQueue()
 	{
-		ray.origin.x = x;
-		ray.origin.y = y;
+		((ArrayList<eventType>)queue.clone()).forEach((ev) -> resolveEvent(ev));
+		queue.clear();
 	}
 	
 	public void draw()

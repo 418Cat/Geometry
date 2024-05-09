@@ -3,7 +3,6 @@ package MathPkg.Shapes.Shapes2D;
 import java.util.ArrayList;
 
 import MathPkg.Angle.Angle2D.AbsAngle;
-import MathPkg.Angle.Angle2D.Angle;
 import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
 import MathPkg.Rays.Ray2D;

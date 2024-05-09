@@ -1,6 +1,5 @@
 package MathPkg.Vectors;
 
-import MathPkg.Angle.Angle2D.Angle;
 import MathPkg.Points.Point2D;
 import MathPkg.Segments.Segment2D;
 import MathPkg.Lines.Line2D;

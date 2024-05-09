@@ -104,7 +104,11 @@ public class Line2D implements Reflector2D {
 
 	@Override
 	public boolean intersects(Ray2D ray) {
-		return(AbsAngle.angle(new Vector2D(ray.origin, this.projection(ray.origin)), ray.vect) < 90);
+		if(ray == null) return false;
+		return(
+				AbsAngle.angle(
+						new Vector2D(ray.origin, this.projection(ray.origin)), ray.vect)
+				< 90);
 	}
 
 	@Override
