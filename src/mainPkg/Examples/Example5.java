@@ -9,23 +9,25 @@ import MathPkg.Shapes.Shapes2D.Reflector2D;
 import MathPkg.Shapes.Shapes2D.Triangle;
 import MathPkg.Vectors.Vector2D;
 import mainPkg.Frame;
+import mainPkg.events.Event;
+import mainPkg.events.types.MouseEv;
 
 public class Example5 implements Example {
 	
-	private ArrayList<eventType> queue = new ArrayList<>();
+	private ArrayList<Event> queue = new ArrayList<>();
 	
 	Reflector2D[] shapes = 
 	{
-		new Triangle(new Point2D(700, 853), new Point2D(900,750), new Point2D(750, 600)),
-		new Circle(new Point2D(300, 300), 100)
+		new Triangle(new Point2D(200, 475), new Point2D(250,375), new Point2D(377, 325)),
+		new Circle(new Point2D(150, 150), 50)
 	};
 	
-	Point2D movingPnt = new Point2D(500, 300);
-	Circle movingCircle = new Circle(new Point2D(300, 300), 100);
+	Point2D projectPoint = new Point2D(350, 150);
+	Circle movingCircle = new Circle(new Point2D(150, 150), 50);
 	
-	Line2D line = new Line2D(new Point2D(500, 500), new Vector2D(-1, -1));
+	Line2D line = new Line2D(new Point2D(250, 250), new Vector2D(-1, -1));
 	
-	Circle rotating = new Circle(new Point2D(300, 800), 150);
+	Circle rotating = new Circle(new Point2D(150, 400), 75);
 	
 	
 	public Example5()
@@ -33,22 +35,26 @@ public class Example5 implements Example {
 		
 	}
 	
-	public void addToQueue(Example.eventType event)
+	public void addToQueue(Event event)
 	{
 		queue.add(event);
 	}
 	
-	private void resolveEvent(Example.eventType event)
+	private void resolveEvent(Event event)
 	{
 		if(event == null) return;
-		switch (event) {
+		if(event.getClass() != MouseEv.class) return;
+		
+		MouseEv mev = (MouseEv)event;
+		
+		switch (mev) {
 			case click:
 			{
 				break;
 			}
-			case mouse:
+			case move:
 			{
-				int values[] = event.getValues();
+				int values[] = mev.getValues();
 				movingCircle.center.x = values[0];
 				movingCircle.center.y = values[1];
 				break;
@@ -57,13 +63,16 @@ public class Example5 implements Example {
 			{
 				break;
 			}
+			
+			default:
+				break;
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void resolveQueue()
 	{
-		((ArrayList<eventType>)queue.clone()).forEach((ev) -> resolveEvent(ev));
+		((ArrayList<Event>)queue.clone()).forEach((ev) -> resolveEvent(ev));
 		queue.clear();
 	}
 	
@@ -85,11 +94,19 @@ public class Example5 implements Example {
 	
 	public void draw()
 	{
-		Frame.draw(movingPnt, "A");
+		Frame.draw(projectPoint, "A");
 		Frame.draw(movingCircle);
 		Frame.draw(line);
 		
-		Frame.draw(movingCircle.projection(movingPnt), "A's Projection");
+		Frame.draw(movingCircle.center, "O");
+		
+		Point2D oProj = line.projection(movingCircle.center);
+		Vector2D oProjA = new Vector2D(oProj, projectPoint).unit().multiply(125);
+		
+		Frame.draw(oProj, oProjA);
+		Frame.draw(oProj, "O's Projection");
+		
+		Frame.draw(movingCircle.projection(projectPoint), "A's Projection");
 		
 		for(Reflector2D ref : shapes)
 		{
@@ -97,7 +114,7 @@ public class Example5 implements Example {
 			
 			for(Point2D pnt : ref.intersection(movingCircle))
 			{
-				Frame.draw(pnt, "intersect");
+				Frame.draw(pnt, "");
 			}
 			
 			for(Point2D pnt : ref.intersection(line))

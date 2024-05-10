@@ -1,8 +1,10 @@
 package mainPkg;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.image.BufferStrategy;
+import java.util.ArrayList;
 
 import javax.swing.JFrame;
 import javax.swing.WindowConstants;
@@ -23,12 +25,17 @@ public class Frame {
 	public static double ZOOM = 1; 
 	public static JFrame frame;
 	public static BufferStrategy bufferStrategy;
+	private static boolean clearMode = true;
 	
 	private static long start;
 	
+	private static long lastFpsDisplayTime = System.currentTimeMillis();
+	private static int MIN_FPS_DISPLAY_TIME_MS = 100;
+	private static float lastFpsDisplay = 0;
 	private static float fpsSum;
 	private static int fpsReadings = 0;
-	private static int fpsReadingsLimit = 100;
+	
+	private static ArrayList<String> debugs = new ArrayList<String>();
 	
 	public static void initFrame(int sizeX, int sizeY, int locX, int locY)
 	{
@@ -65,34 +72,59 @@ public class Frame {
 	public static void start()
 	{
 		g = bufferStrategy.getDrawGraphics();
-		g.clearRect(0, 0, Main.frameSize[0], Main.frameSize[1]);
+		if(clearMode) g.clearRect(0, 0, Main.frameSize[0], Main.frameSize[1]);
 		
 		start = System.nanoTime();
 	}
 	
 	public static void end()
 	{
+		
 		Long deltaNs = System.nanoTime() - start;
 		fpsSum += (1000_000_000. / deltaNs);
 		fpsReadings++;
 		
+		if(System.currentTimeMillis() - lastFpsDisplayTime >= MIN_FPS_DISPLAY_TIME_MS)
+		{
+			lastFpsDisplay = fpsSum / fpsReadings;
+			fpsSum = 0;
+			fpsReadings = 0;
+			
+			lastFpsDisplayTime = System.currentTimeMillis();
+		}
+		
 		double ms = 0.000001 * deltaNs;
 		
 		String frameTime = String.format("%.2fms", ms);
-		String fps = String.format("%.2ffps", fpsSum / fpsReadings);
+		String fps = String.format("%.1ffps", lastFpsDisplay);
 		
+		g.clearRect(5, 5, frameTime.length() * 10, 20);
+		g.clearRect(5, 25, fps.length() * 10, 20);
+		
+		g.setFont(new Font("Monospaced", Font.PLAIN, 15));
 		g.setColor(Color.red);
 		g.drawChars(frameTime.toCharArray(), 0, frameTime.length(), 10, 20);
 		g.drawChars(fps.toCharArray(), 0, fps.length(), 10, 40);
 		
-		if(fpsReadings >= fpsReadingsLimit)
+		for(int i = 0; i < debugs.size(); i++)
 		{
-			fpsSum = 0;
-			fpsReadings = 0;
+			g.clearRect(5, 45 + 20*i, debugs.get(i).length() * 10, 20);
+			g.drawChars(debugs.get(i).toCharArray(), 0, debugs.get(i).length(), 10, 60 + 20*i);
 		}
+		debugs.clear();
 		
 		g.dispose();
 		bufferStrategy.show();
+	}
+	
+	public static void setClearMode(boolean setMode)
+	{
+		clearMode = setMode;
+	}
+	
+	public static void debugPrint(String debug)
+	{
+		debugs.add(debug);
 	}
 	
 	public static void clear(Color color)
@@ -113,6 +145,7 @@ public class Frame {
 		if(ref.getClass() == Segment2D.class) draw((Segment2D)ref);
 		if(ref.getClass() == Line2D.class) draw((Line2D)ref);
 		if(ref.getClass() == Triangle.class) draw((Triangle)ref);
+		if(ref.getClass() == Ray2D.class) draw((Ray2D)ref);
 	}
 	
 	public static void draw(Triangle tri)
@@ -140,7 +173,9 @@ public class Frame {
 		
 		Point2D textCoords = vect.multiply(0.5).transform(vect.normalVectors()[1].multiply(10.0).transform(pnt));
 		g.setColor(Color.black);
-		g.drawChars((String.valueOf(vect.x).substring(0, 5) + ", " + String.valueOf(vect.y).substring(0, 5)).toCharArray(), 0, 12, (int)textCoords.x, (int)textCoords.y);
+		
+		String coordsDisp = String.format("%.2f;  %.2f" , vect.x, vect.y);
+		g.drawChars(coordsDisp.toCharArray(), 0, coordsDisp.length(), (int)textCoords.x, (int)textCoords.y);
 	}
 	
 	public static void draw(Line2D line)
@@ -151,7 +186,7 @@ public class Frame {
 		g.drawLine((int)(line.point.x*ZOOM), (int)(line.point.y*ZOOM), (int)((line.point.x - line.vect.unit().x*mult)*ZOOM), (int)((line.point.y - line.vect.unit().y*mult)*ZOOM));
 	}
 	
-	public static void draw(Circle circle)
+	private static void draw(Circle circle)
 	{
 		g.setColor(Color.pink);
 		g.drawOval((int)((circle.center.x - circle.radius)*ZOOM), (int)((circle.center.y - circle.radius)*ZOOM), (int)((circle.radius*2)*ZOOM), (int)((circle.radius*2)*ZOOM));
@@ -163,17 +198,17 @@ public class Frame {
 		g.drawArc((int)segA.A.x-radius, (int)segA.A.y-radius, radius*2, radius*2, (int)AbsAngle.angle(segA, new Vector2D(1, 0)),(int)AbsAngle.angle(segA, segB));
 	}
 	
-	public static void draw(Segment2D segment)
+	private static void draw(Segment2D segment)
 	{
 		g.setColor(Color.gray);
 		g.drawLine((int)(segment.A.x*ZOOM), (int)(segment.A.y*ZOOM), (int)(segment.B.x*ZOOM), (int)(segment.B.y*ZOOM));
 		
-		Vector2D vecNorms[] = new Vector2D(segment).normalVectors();
+		/*Vector2D vecNorms[] = new Vector2D(segment).normalVectors();
 		Segment2D seg1 = new Segment2D(vecNorms[0].transform(segment.A), vecNorms[0].transform(segment.B));
 		Segment2D seg2 = new Segment2D(vecNorms[0].transform(segment.A), vecNorms[0].transform(segment.B));
 		
 		g.drawLine((int)(seg1.A.x*ZOOM), (int)(seg1.A.y*ZOOM), (int)(seg1.B.x*ZOOM), (int)(seg1.B.y*ZOOM));
-		g.drawLine((int)(seg2.A.x*ZOOM), (int)(seg2.A.y*ZOOM), (int)(seg2.B.x*ZOOM), (int)(seg2.B.y*ZOOM));
+		g.drawLine((int)(seg2.A.x*ZOOM), (int)(seg2.A.y*ZOOM), (int)(seg2.B.x*ZOOM), (int)(seg2.B.y*ZOOM));*/
 	}
 	
 	public static void draw(Ray2D ray)

@@ -3,14 +3,14 @@ package mainPkg;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import mainPkg.Examples.Example;
-import mainPkg.Examples.Example.eventType;
+import mainPkg.events.types.MouseEv;
 
 public class MouseClick implements MouseListener {
 
 	@Override
-	public void mouseClicked(MouseEvent e) {
-		Example.eventType event = eventType.click;
+	public void mouseClicked(MouseEvent e)
+	{
+		MouseEv event = MouseEv.click;
 		event.setValues(new int[] {(int)(e.getX()/Frame.ZOOM), (int)(e.getY()/Frame.ZOOM)});
 		Main.ex.addToQueue(event);
 	}

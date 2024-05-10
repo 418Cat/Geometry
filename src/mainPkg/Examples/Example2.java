@@ -10,10 +10,12 @@ import MathPkg.Shapes.Shapes3D.Sphere;
 import MathPkg.Vectors.Vector3D;
 import mainPkg.Frame;
 import mainPkg.Main;
+import mainPkg.events.Event;
+import mainPkg.events.types.MouseEv;
 
 public class Example2 implements Example {
 	
-	ArrayList<eventType> queue = new ArrayList<>();
+	ArrayList<Event> queue = new ArrayList<>();
 	
 	public static Ray3D[][] rayFrame = new Ray3D[Main.frameSize[0]][Main.frameSize[1]];
 	public static Reflector3D[] refs = new Reflector3D[] {//new Sphere(new Point3D(1300, 900, 0), 300),
@@ -35,40 +37,47 @@ public class Example2 implements Example {
 		}
 	}
 	
-	public void addToQueue(eventType ev)
+	public void addToQueue(Event ev)
 	{
 		queue.add(ev);
 	}
 	
-	private void resolveEvent(eventType event)
+	private void resolveEvent(Event event)
 	{
 		if(event == null) return;
-		switch (event) {
-		case click:
-		{
-			break;
+		if(event.getClass() != MouseEv.class) return;
+		
+		MouseEv mev = (MouseEv)event;
+		
+		switch (mev) {
+			case click:
+			{
+				break;
+			}
+			case move:
+			{
+				int values[] = mev.getValues();
+				camera.y = -Main.frameSize[0]/2 + values[0];
+				camera.z = -Main.frameSize[1]/2 + values[1];
+				break;
+			}
+			case scroll:
+			{
+				int scrollAmount = mev.getValues()[0];
+				camera.x += scrollAmount*50;
+				System.out.println("went forward " + scrollAmount*50);
+				break;
+			}
+			
+			default:
+				break;
 		}
-		case mouse:
-		{
-			int values[] = event.getValues();
-			camera.y = -Main.frameSize[0]/2 + values[0];
-			camera.z = -Main.frameSize[1]/2 + values[1];
-			break;
-		}
-		case scroll:
-		{
-			int scrollAmount = event.getValues()[0];
-			camera.x += scrollAmount*50;
-			System.out.println("went forward " + scrollAmount*50);
-			break;
-		}
-	}
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void resolveQueue()
 	{
-		((ArrayList<eventType>)queue.clone()).forEach((ev) -> resolveEvent(ev));
+		((ArrayList<Event>)queue.clone()).forEach((ev) -> resolveEvent(ev));
 		queue.clear();
 	}
 	

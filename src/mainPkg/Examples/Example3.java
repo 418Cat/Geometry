@@ -10,24 +10,14 @@ import MathPkg.Segments.Segment2D;
 import MathPkg.Shapes.Shapes2D.Circle;
 import MathPkg.Shapes.Shapes2D.Reflector2D;
 import mainPkg.Frame;
-import mainPkg.Main;
+import mainPkg.events.Event;
+import mainPkg.events.types.MouseEv;
 
 public class Example3 implements Example {
 	
-	private ArrayList<eventType> queue = new ArrayList<>();
+	private ArrayList<Event> queue = new ArrayList<>();
 	
-	/*public static Reflector2D[] refs = {
-			new Line2D(new Point2D(0, 900), new Vector2D(1, 0)),
-			new Circle(new Point2D(300, 300), 100),
-			new Circle(new Point2D(650, 500), 50),
-			new Circle(new Point2D(500, 420), 75),
-			new Circle(new Point2D(800, 300), 200),
-			new Segment2D(new Point2D(100, 100), new Point2D(900, 200)),
-			new Triangle(new Point2D(200, 200), new Point2D(300, 250), new Point2D(350, 500)),
-			new Triangle(new Point2D(950, 850), new Point2D(700, 800), new Point2D(900, 850))
-	};*/
-	
-	public static Reflector2D[] refs = new Reflector2D[100];
+	public static Reflector2D[] refs = new Reflector2D[75];
 	
 	public static Point2D A = new Point2D(500, 500);
 	public static Point2D Aprime = new Point2D(500, 600);
@@ -35,10 +25,10 @@ public class Example3 implements Example {
 	
 	public static Ray2D ray = new Ray2D(A, Aprime);
 	
-	public static final int RAY_NB = 1000;
+	public static final int RAY_NB = 750;
 	public static final int FOV = 360;
 	
-	public static int MAX_BOUNCES = 5;
+	public static int MAX_BOUNCES = 2;
 	
 	public Example3()
 	{
@@ -51,45 +41,57 @@ public class Example3 implements Example {
 			
 			refs[i] = new Circle(new Point2D(x, y), r);
 		}
+		
+		/*refs[refs.length-4] = new Line2D(new Point2D(0, 0), new Point2D(0, 999));
+		refs[refs.length-3] = new Line2D(new Point2D(0, 999), new Point2D(999, 999));
+		refs[refs.length-2] = new Line2D(new Point2D(999, 999), new Point2D(999, 0));
+		refs[refs.length-1] = new Line2D(new Point2D(999, 0), new Point2D(0, 0));*/
 	}
 	
-	public void addToQueue(eventType ev)
+	public void addToQueue(Event ev)
 	{
 		queue.add(ev);
 	}
 	
-	private void resolveEvent(eventType event)
+	private void resolveEvent(Event event)
 	{
 		if(event == null) return;
-		switch (event) {
-		case click:
-		{
-			int values[] = event.getValues();
-			ray.origin.x = values[0];
-			ray.origin.y = values[1];
-			break;
+		if(event.getClass() != MouseEv.class) return;
+		
+		MouseEv mev = (MouseEv)event;
+		
+		switch (mev) {
+			case click:
+			{
+				int values[] = mev.getValues();
+				ray.origin.x = values[0];
+				ray.origin.y = values[1];
+				break;
+			}
+			case move:
+			{
+				int values[] = mev.getValues();
+				ray.origin.x = values[0];
+				ray.origin.y = values[1];
+				break;
+			}
+			case scroll:
+			{
+				int scrollAmount = mev.getValues()[0];
+				MAX_BOUNCES+=scrollAmount;
+				MAX_BOUNCES = MAX_BOUNCES < 0 ? 0 : MAX_BOUNCES;
+				break;
+			}
+			
+			default:
+				break;
 		}
-		case mouse:
-		{
-			int values[] = event.getValues();
-			ray.origin.x = -Main.frameSize[0]/2 + values[0];
-			ray.origin.y = -Main.frameSize[1]/2 + values[1];
-			break;
-		}
-		case scroll:
-		{
-			int scrollAmount = event.getValues()[0];
-			MAX_BOUNCES+=scrollAmount;
-			MAX_BOUNCES = MAX_BOUNCES < 0 ? 0 : MAX_BOUNCES;
-			break;
-		}
-	}
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void resolveQueue()
 	{
-		((ArrayList<eventType>)queue.clone()).forEach((ev) -> resolveEvent(ev));
+		((ArrayList<Event>)queue.clone()).forEach((ev) -> resolveEvent(ev));
 		queue.clear();
 	}
 	
@@ -97,14 +99,19 @@ public class Example3 implements Example {
 	{
 		Frame.clear(Color.black);
 		
+		
+		Frame.debugPrint(String.format("RAY_NB: %d", RAY_NB));
+		Frame.debugPrint(String.format("MAX_BOUNCES: %d", MAX_BOUNCES));
+		
 		double degreePerRay = (double)FOV/(double)RAY_NB;
+		
+		//double initialTurn = Math.random() * degreePerRay;
 		
 		for(int rayNb = 0; rayNb < RAY_NB; rayNb++)
 		{
 			
-			//Frame.draw(ray);
-			
 			Ray2D currentRay = new Ray2D(ray.origin, ray.vect.turn(-(double)FOV/2 + rayNb*degreePerRay));
+			//currentRay.vect = currentRay.vect.turn(initialTurn);
 			Reflector2D lastRef = null;
 			for(int bounce = 0; bounce <= MAX_BOUNCES; bounce++)
 			{
@@ -134,6 +141,7 @@ public class Example3 implements Example {
 				Segment2D travel = new Segment2D(currentRay.origin, closestPoint);
 				int distTravel = (int)travel.norm();
 				
+				//Frame.draw(new Segment2D(currentRay.origin, closestPoint));
 				Frame.drawPix((int)closestPoint.x, (int)closestPoint.y, new Color((distTravel / 2)%256, (int)((Math.abs(currentRay.vect.x / currentRay.vect.norm())) * 255), (int)((Math.abs(currentRay.vect.y / currentRay.vect.norm())) * 255)));
 				currentRay = closestRef.reflect(currentRay);
 				lastRef = closestRef;

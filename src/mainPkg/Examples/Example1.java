@@ -2,6 +2,7 @@ package mainPkg.Examples;
 
 import java.util.ArrayList;
 
+import MathPkg.Angle.Angle2D.Angle;
 import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
 import MathPkg.Rays.Ray2D;
@@ -11,10 +12,12 @@ import MathPkg.Shapes.Shapes2D.Reflector2D;
 import MathPkg.Shapes.Shapes2D.Triangle;
 import MathPkg.Vectors.Vector2D;
 import mainPkg.Frame;
+import mainPkg.events.Event;
+import mainPkg.events.types.MouseEv;
 
 public class Example1 implements Example {
 	
-	private ArrayList<eventType> queue = new ArrayList<>();
+	private ArrayList<Event> queue = new ArrayList<>();
 	
 	public static Reflector2D[] refs = {
 			new Line2D(new Point2D(0, 900), new Vector2D(1, 0)),
@@ -24,7 +27,7 @@ public class Example1 implements Example {
 			new Circle(new Point2D(800, 300), 200),
 			new Segment2D(new Point2D(100, 100), new Point2D(900, 200)),
 			new Triangle(new Point2D(200, 200), new Point2D(300, 250), new Point2D(350, 500)),
-			new Triangle(new Point2D(950, 850), new Point2D(700, 800), new Point2D(900, 850)),
+			new Triangle(new Point2D(980, 750), new Point2D(700, 800), new Point2D(900, 850)),
 	};
 	
 	public static Point2D A = new Point2D(500, 500);
@@ -32,30 +35,34 @@ public class Example1 implements Example {
 	public static Line2D line = new Line2D(A, Aprime);
 	
 	public static Ray2D ray = new Ray2D(A, Aprime);
-	public static int fov = 60;
-	public static int rayNb = 60;
+	public static int fov = 40;
+	public static int rayNb = 35;
 	
 	public static int MAX_BOUNCES = 3;
 	
-	public void addToQueue(Example.eventType event)
+	public void addToQueue(Event event)
 	{
 		queue.add(event);
 	}
 	
-	private void resolveEvent(Example.eventType event)
+	private void resolveEvent(Event event)
 	{
 		if(event == null) return;
-		switch (event) {
+		if(event.getClass() != MouseEv.class) return;
+		
+		MouseEv mev = (MouseEv)event;
+		
+		switch ((MouseEv)event) {
 			case click:
 			{
-				int values[] = event.getValues();
+				int values[] = mev.getValues();
 				ray.origin.x = values[0];
 				ray.origin.y = values[1];
 				break;
 			}
-			case mouse:
+			case move:
 			{
-				int values[] = event.getValues();
+				int values[] = mev.getValues();
 				Aprime.x = values[0];
 				Aprime.y = values[1];
 				line.vect = new Vector2D(line.point, Aprime).unit();
@@ -64,23 +71,33 @@ public class Example1 implements Example {
 			}
 			case scroll:
 			{
-				int scrollAmount = event.getValues()[0];
+				int scrollAmount = mev.getValues()[0];
 				MAX_BOUNCES+=scrollAmount;
 				MAX_BOUNCES = MAX_BOUNCES < 0 ? 0 : MAX_BOUNCES;
 				break;
 			}
+			
+			default:
+				break;
 		}
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void resolveQueue()
 	{
-		((ArrayList<eventType>)queue.clone()).forEach((ev) -> resolveEvent(ev));
+		((ArrayList<Event>)queue.clone()).forEach((ev) -> resolveEvent(ev));
 		queue.clear();
 	}
 	
 	public void draw()
 	{
+		Frame.debugPrint(String.format("ray nb: %d", rayNb));
+		Frame.debugPrint(String.format("max bounces: %d", MAX_BOUNCES));
+		Frame.debugPrint(String.format("cursor: %.0f, %.0f", ray.origin.x, ray.origin.y));
+		Frame.debugPrint(String.format("angle: %.1f", Angle.angle(ray.vect)));
+		
+		int hits = 0;
+		
 		Frame.draw(line.point, "O");
 		
 		for(Reflector2D ref : refs)
@@ -106,7 +123,6 @@ public class Example1 implements Example {
 				{
 					if(lastRef != ref)
 					{
-						//if(ref.getClass() == Circle.class) Frame.draw(((Circle)ref).projection(currentRay), " ");
 						for(Point2D pnt : ref.intersection(currentRay))
 						{
 							//Frame.draw(pnt, " ");
@@ -121,16 +137,24 @@ public class Example1 implements Example {
 					}
 					
 				}
+				
+				Frame.draw(currentRay);	
+				
 				if(closestRef == null)
 				{
-					Frame.draw(currentRay);	
 					break;
 				}
+				Frame.draw(closestPoint, " ");
 				Frame.draw(new Segment2D(currentRay.origin, closestPoint));
 				currentRay = closestRef.reflect(currentRay);
 				lastRef = closestRef;
+				
+				hits++;
 			}
+			
 		}
+		
+		Frame.debugPrint(String.format("hits: %d", hits));
 	}
 	
 }
