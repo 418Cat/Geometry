@@ -14,7 +14,7 @@ import mainPkg.events.types.MouseEv;
 
 public class Example5 implements Example {
 	
-	private ArrayList<Event> queue = new ArrayList<>();
+	private ArrayList<Event<?>> queue = new ArrayList<>();
 	
 	Reflector2D[] shapes = 
 	{
@@ -35,12 +35,12 @@ public class Example5 implements Example {
 		
 	}
 	
-	public void addToQueue(Event event)
+	public void addToQueue(Event<?> event)
 	{
 		queue.add(event);
 	}
 	
-	private void resolveEvent(Event event)
+	private void resolveEvent(Event<?> event)
 	{
 		if(event == null) return;
 		if(event.getClass() != MouseEv.class) return;
@@ -63,6 +63,12 @@ public class Example5 implements Example {
 			{
 				break;
 			}
+			case drag:
+			{
+				Point2D newPoint = new Point2D(mev.getValues()[0], mev.getValues()[1]);
+				
+				movingCircle.radius = movingCircle.center.distance(newPoint);
+			}
 			
 			default:
 				break;
@@ -72,7 +78,7 @@ public class Example5 implements Example {
 	@SuppressWarnings("unchecked")
 	public void resolveQueue()
 	{
-		((ArrayList<Event>)queue.clone()).forEach((ev) -> resolveEvent(ev));
+		((ArrayList<Event<?>>)queue.clone()).forEach((ev) -> resolveEvent(ev));
 		queue.clear();
 	}
 	

@@ -10,7 +10,7 @@ public enum MouseEv implements Event<int[]>
 	
 	click(new int[2]),
 	
-	drag(new int[4]);
+	drag(new int[2]);
 	
 	private int[] values;
 	

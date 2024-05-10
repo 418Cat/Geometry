@@ -18,6 +18,10 @@ import MathPkg.Shapes.Shapes2D.Circle;
 import MathPkg.Shapes.Shapes2D.Reflector2D;
 import MathPkg.Shapes.Shapes2D.Triangle;
 import MathPkg.Vectors.Vector2D;
+import mainPkg.events.eventResolver;
+import mainPkg.events.listeners.mouse.MouseClick;
+import mainPkg.events.listeners.mouse.MousePos;
+import mainPkg.events.listeners.mouse.MouseScroll;
 
 public class Frame {
 	
@@ -37,11 +41,11 @@ public class Frame {
 	
 	private static ArrayList<String> debugs = new ArrayList<String>();
 	
-	public static void initFrame(int sizeX, int sizeY, int locX, int locY)
+	public static void initFrame(int sizeX, int sizeY, int locX, int locY, eventResolver evResolver)
 	{
-		MousePos mP = new MousePos();
-		MouseClick mC = new MouseClick();
-		MouseScroll mS = new MouseScroll();
+		MousePos mP = new MousePos(evResolver);
+		MouseClick mC = new MouseClick(evResolver);
+		MouseScroll mS = new MouseScroll(evResolver);
 		
 		frame = new JFrame("Math test");
 		frame.setLocation(locX, locY);

@@ -17,7 +17,7 @@ import mainPkg.events.types.MouseEv;
 
 public class Example1 implements Example {
 	
-	private ArrayList<Event> queue = new ArrayList<>();
+	private ArrayList<Event<?>> queue = new ArrayList<>();
 	
 	public static Reflector2D[] refs = {
 			new Line2D(new Point2D(0, 900), new Vector2D(1, 0)),
@@ -40,12 +40,12 @@ public class Example1 implements Example {
 	
 	public static int MAX_BOUNCES = 3;
 	
-	public void addToQueue(Event event)
+	public void addToQueue(Event<?> event)
 	{
 		queue.add(event);
 	}
 	
-	private void resolveEvent(Event event)
+	private void resolveEvent(Event<?> event)
 	{
 		if(event == null) return;
 		if(event.getClass() != MouseEv.class) return;
@@ -85,7 +85,7 @@ public class Example1 implements Example {
 	@SuppressWarnings("unchecked")
 	public void resolveQueue()
 	{
-		((ArrayList<Event>)queue.clone()).forEach((ev) -> resolveEvent(ev));
+		((ArrayList<Event<?>>)queue.clone()).forEach((ev) -> resolveEvent(ev));
 		queue.clear();
 	}
 	

@@ -15,7 +15,7 @@ import mainPkg.events.types.MouseEv;
 
 public class Example2 implements Example {
 	
-	ArrayList<Event> queue = new ArrayList<>();
+	ArrayList<Event<?>> queue = new ArrayList<>();
 	
 	public static Ray3D[][] rayFrame = new Ray3D[Main.frameSize[0]][Main.frameSize[1]];
 	public static Reflector3D[] refs = new Reflector3D[] {//new Sphere(new Point3D(1300, 900, 0), 300),
@@ -37,12 +37,12 @@ public class Example2 implements Example {
 		}
 	}
 	
-	public void addToQueue(Event ev)
+	public void addToQueue(Event<?> ev)
 	{
 		queue.add(ev);
 	}
 	
-	private void resolveEvent(Event event)
+	private void resolveEvent(Event<?> event)
 	{
 		if(event == null) return;
 		if(event.getClass() != MouseEv.class) return;
@@ -77,7 +77,7 @@ public class Example2 implements Example {
 	@SuppressWarnings("unchecked")
 	public void resolveQueue()
 	{
-		((ArrayList<Event>)queue.clone()).forEach((ev) -> resolveEvent(ev));
+		((ArrayList<Event<?>>)queue.clone()).forEach((ev) -> resolveEvent(ev));
 		queue.clear();
 	}
 	

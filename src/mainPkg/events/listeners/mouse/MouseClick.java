@@ -1,18 +1,21 @@
-package mainPkg;
+package mainPkg.events.listeners.mouse;
 
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import mainPkg.events.eventResolver;
 import mainPkg.events.types.MouseEv;
 
 public class MouseClick implements MouseListener {
+	
+	private eventResolver evResolver;
 
 	@Override
 	public void mouseClicked(MouseEvent e)
 	{
 		MouseEv event = MouseEv.click;
-		event.setValues(new int[] {(int)(e.getX()/Frame.ZOOM), (int)(e.getY()/Frame.ZOOM)});
-		Main.ex.addToQueue(event);
+		event.setValues(new int[] {e.getX(), e.getY()});
+		evResolver.addToQueue(event);
 	}
 
 	@Override
@@ -37,6 +40,11 @@ public class MouseClick implements MouseListener {
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public MouseClick(eventResolver evResolver)
+	{
+		this.evResolver = evResolver;
 	}
 
 }
