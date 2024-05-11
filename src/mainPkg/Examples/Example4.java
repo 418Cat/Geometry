@@ -11,9 +11,10 @@ import MathPkg.Shapes.Shapes2D.Circle;
 import MathPkg.Shapes.Shapes2D.Reflector2D;
 import MathPkg.Shapes.Shapes2D.Triangle;
 import MathPkg.Vectors.Vector2D;
-import mainPkg.Frame;
+import mainPkg.Main;
 import mainPkg.events.Event;
 import mainPkg.events.types.MouseEv;
+import mainPkg.Graphics.DrawUtils;
 
 public class Example4 implements Example {
 	
@@ -89,12 +90,12 @@ public class Example4 implements Example {
 		queue.clear();
 	}
 	
-	public void draw()
+	public void render()
 	{
 		
-		Frame.clear(Color.black);
+		DrawUtils.clear(Color.black, Main.frame);
 		
-		Frame.draw(line.point, "O");
+		DrawUtils.draw(line.point, "O", Main.frame);
 		
 		float rayPerDeg = (float)fov/(float)rayNb;
 		
@@ -129,7 +130,7 @@ public class Example4 implements Example {
 				}
 				if(closestRef == null) 
 					break;
-				Frame.draw(new Segment2D(currentRay.origin, closestPoint));
+				DrawUtils.draw(new Segment2D(currentRay.origin, closestPoint), Main.frame);
 				currentRay = closestRef.reflect(currentRay);
 				lastRef = closestRef;
 			}

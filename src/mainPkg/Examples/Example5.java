@@ -8,9 +8,10 @@ import MathPkg.Shapes.Shapes2D.Circle;
 import MathPkg.Shapes.Shapes2D.Reflector2D;
 import MathPkg.Shapes.Shapes2D.Triangle;
 import MathPkg.Vectors.Vector2D;
-import mainPkg.Frame;
 import mainPkg.events.Event;
 import mainPkg.events.types.MouseEv;
+import mainPkg.Main;
+import mainPkg.Graphics.DrawUtils;
 
 public class Example5 implements Example {
 	
@@ -98,40 +99,40 @@ public class Example5 implements Example {
 		
 	}
 	
-	public void draw()
+	public void render()
 	{
-		Frame.draw(projectPoint, "A");
-		Frame.draw(movingCircle);
-		Frame.draw(line);
+		DrawUtils.draw(projectPoint, "A", Main.frame);
+		DrawUtils.draw(movingCircle, Main.frame);
+		DrawUtils.draw(line, Main.frame);
 		
-		Frame.draw(movingCircle.center, "O");
+		DrawUtils.draw(movingCircle.center, "O", Main.frame);
 		
 		Point2D oProj = line.projection(movingCircle.center);
 		Vector2D oProjA = new Vector2D(oProj, projectPoint).unit().multiply(125);
 		
-		Frame.draw(oProj, oProjA);
-		Frame.draw(oProj, "O's Projection");
+		DrawUtils.draw(oProj, oProjA, Main.frame);
+		DrawUtils.draw(oProj, "O's Projection", Main.frame);
 		
-		Frame.draw(movingCircle.projection(projectPoint), "A's Projection");
+		DrawUtils.draw(movingCircle.projection(projectPoint), "A's Projection", Main.frame);
 		
 		for(Reflector2D ref : shapes)
 		{
-			Frame.draw(ref);
+			DrawUtils.draw(ref, Main.frame);
 			
 			for(Point2D pnt : ref.intersection(movingCircle))
 			{
-				Frame.draw(pnt, "");
+				DrawUtils.draw(pnt, "", Main.frame);
 			}
 			
 			for(Point2D pnt : ref.intersection(line))
 			{
-				Frame.draw(pnt, "intersect");
+				DrawUtils.draw(pnt, "intersect", Main.frame);
 			}
 		}
 		
 		for(Point2D pnt : line.intersection(movingCircle))
 		{
-			Frame.draw(pnt, " ");
+			DrawUtils.draw(pnt, " ", Main.frame);
 		}
 	}
 }

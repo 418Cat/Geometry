@@ -11,9 +11,10 @@ import MathPkg.Shapes.Shapes2D.Circle;
 import MathPkg.Shapes.Shapes2D.Reflector2D;
 import MathPkg.Shapes.Shapes2D.Triangle;
 import MathPkg.Vectors.Vector2D;
-import mainPkg.Frame;
+import mainPkg.Main;
 import mainPkg.events.Event;
 import mainPkg.events.types.MouseEv;
+import mainPkg.Graphics.DrawUtils;
 
 public class Example1 implements Example {
 	
@@ -89,20 +90,20 @@ public class Example1 implements Example {
 		queue.clear();
 	}
 	
-	public void draw()
+	public void render()
 	{
-		Frame.debugPrint(String.format("ray nb: %d", rayNb));
-		Frame.debugPrint(String.format("max bounces: %d", MAX_BOUNCES));
-		Frame.debugPrint(String.format("cursor: %.0f, %.0f", ray.origin.x, ray.origin.y));
-		Frame.debugPrint(String.format("angle: %.1f", Angle.angle(ray.vect)));
+		Main.frame.debugPrint(String.format("ray nb: %d", rayNb));
+		Main.frame.debugPrint(String.format("max bounces: %d", MAX_BOUNCES));
+		Main.frame.debugPrint(String.format("cursor: %.0f, %.0f", ray.origin.x, ray.origin.y));
+		Main.frame.debugPrint(String.format("angle: %.1f", Angle.angle(ray.vect)));
 		
 		int hits = 0;
 		
-		Frame.draw(line.point, "O");
+		DrawUtils.draw(line.point, "O", Main.frame);
 		
 		for(Reflector2D ref : refs)
 		{
-			Frame.draw(ref);
+			DrawUtils.draw(ref, Main.frame);
 		}
 		
 		float rayPerDeg = (float)fov/(float)rayNb;
@@ -138,14 +139,14 @@ public class Example1 implements Example {
 					
 				}
 				
-				Frame.draw(currentRay);	
+				DrawUtils.draw(currentRay, Main.frame);
 				
 				if(closestRef == null)
 				{
 					break;
 				}
-				Frame.draw(closestPoint, " ");
-				Frame.draw(new Segment2D(currentRay.origin, closestPoint));
+				DrawUtils.draw(closestPoint, " ", Main.frame);
+				DrawUtils.draw(new Segment2D(currentRay.origin, closestPoint), Main.frame);
 				currentRay = closestRef.reflect(currentRay);
 				lastRef = closestRef;
 				
@@ -154,7 +155,7 @@ public class Example1 implements Example {
 			
 		}
 		
-		Frame.debugPrint(String.format("hits: %d", hits));
+		Main.frame.debugPrint(String.format("hits: %d", hits));
 	}
 	
 }

@@ -2,6 +2,7 @@ package mainPkg.Examples;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import MathPkg.Lines.Line2D;
 import MathPkg.Points.Point2D;
@@ -9,9 +10,10 @@ import MathPkg.Rays.Ray2D;
 import MathPkg.Segments.Segment2D;
 import MathPkg.Shapes.Shapes2D.Circle;
 import MathPkg.Shapes.Shapes2D.Reflector2D;
-import mainPkg.Frame;
+import mainPkg.Main;
 import mainPkg.events.Event;
 import mainPkg.events.types.MouseEv;
+import mainPkg.Graphics.DrawUtils;
 
 public class Example3 implements Example {
 	
@@ -25,13 +27,68 @@ public class Example3 implements Example {
 	
 	public static Ray2D ray = new Ray2D(A, Aprime);
 	
-	public static final int RAY_NB = 750;
-	public static final int FOV = 360;
+	public static Settings.SETTING scrollSetting = Settings.SETTING.LIGHT_INTENSITY;
+	public static Settings settings;
 	
-	public static int MAX_BOUNCES = 2;
+	class Settings
+	{
+		enum SETTING
+		{
+			RAY_NB(700),
+			MAX_BOUNCES(20),
+			LIGHT_INTENSITY(200),
+			FOV(360),
+			RAY_ANGLE_OFFSET(1),
+			SHOW_RAYS(0);
+			
+			private int value;
+			
+			private SETTING(int val)
+			{
+				this.value = val;
+			}
+			
+			public void setValue(int val)
+			{
+				this.value = val;
+			}
+		}
+		
+		private HashMap<SETTING, Integer> settings = new HashMap<>();
+		
+		public Settings()
+		{
+			for(int i = 0; i < SETTING.values().length; i++)
+			{
+				settings.put(SETTING.values()[i], SETTING.values()[i].value);
+			}
+		}
+		
+		public int getSettingValue(SETTING set)
+		{
+			return settings.get(set);
+		}
+		
+		public void setSettingValue(SETTING set, int val)
+		{
+			settings.put(set, val);
+		}
+		
+		public int indexOfSetting(SETTING set)
+		{
+			for(int i = 0; i < SETTING.values().length; i++)
+			{
+				if(SETTING.values()[i] == set) return i;
+			}
+			
+			return -1;
+		}
+	}
 	
 	public Example3()
 	{
+		settings = new Settings();
+		
 		for(int i = 0; i < refs.length; i++)
 		{
 			int x = (int)(Math.random() * 1000.);
@@ -63,9 +120,7 @@ public class Example3 implements Example {
 		switch (mev) {
 			case click:
 			{
-				int values[] = mev.getValues();
-				ray.origin.x = values[0];
-				ray.origin.y = values[1];
+				scrollSetting = Settings.SETTING.values()[(settings.indexOfSetting(scrollSetting) +1) % Settings.SETTING.values().length];
 				break;
 			}
 			case move:
@@ -78,8 +133,10 @@ public class Example3 implements Example {
 			case scroll:
 			{
 				int scrollAmount = mev.getValues()[0];
-				MAX_BOUNCES+=scrollAmount;
-				MAX_BOUNCES = MAX_BOUNCES < 0 ? 0 : MAX_BOUNCES;
+				
+				settings.setSettingValue(scrollSetting, scrollAmount < 0 ? (int)(settings.getSettingValue(scrollSetting) * 0.9) : (int)(settings.getSettingValue(scrollSetting) * 1.1 + 1));
+				settings.setSettingValue(scrollSetting, settings.getSettingValue(scrollSetting) < 0 ? 0 : settings.getSettingValue(scrollSetting));
+				
 				break;
 			}
 			
@@ -95,25 +152,27 @@ public class Example3 implements Example {
 		queue.clear();
 	}
 	
-	public void draw()
+	public void render()
 	{
-		Frame.clear(Color.black);
+		DrawUtils.clear(Color.black, Main.frame);
 		
-		
-		Frame.debugPrint(String.format("RAY_NB: %d", RAY_NB));
-		Frame.debugPrint(String.format("MAX_BOUNCES: %d", MAX_BOUNCES));
-		
-		double degreePerRay = (double)FOV/(double)RAY_NB;
-		
-		//double initialTurn = Math.random() * degreePerRay;
-		
-		for(int rayNb = 0; rayNb < RAY_NB; rayNb++)
+		for(Settings.SETTING set : Settings.SETTING.values())
 		{
+			Main.frame.debugPrint(String.format("%s: %d", set.toString(), settings.getSettingValue(set)));
+		}
+		
+		Main.frame.debugPrint(String.format("Scroll mode: %s", scrollSetting.toString()));
+		
+		double degreePerRay = (double)settings.getSettingValue(Settings.SETTING.FOV)/(double)settings.getSettingValue(Settings.SETTING.RAY_NB);
+		
+		for(int rayNb = 0; rayNb < settings.getSettingValue(Settings.SETTING.RAY_NB); rayNb++)
+		{
+			float totalDist = 0;
 			
-			Ray2D currentRay = new Ray2D(ray.origin, ray.vect.turn(-(double)FOV/2 + rayNb*degreePerRay));
-			//currentRay.vect = currentRay.vect.turn(initialTurn);
+			Ray2D currentRay = new Ray2D(ray.origin, ray.vect.turn(-(double)settings.getSettingValue(Settings.SETTING.FOV)/2 + rayNb*degreePerRay));
+			if(settings.getSettingValue(Settings.SETTING.RAY_ANGLE_OFFSET) != 0) currentRay.vect = currentRay.vect.turn(Math.random() * degreePerRay);
 			Reflector2D lastRef = null;
-			for(int bounce = 0; bounce <= MAX_BOUNCES; bounce++)
+			for(int bounce = 0; bounce <= settings.getSettingValue(Settings.SETTING.MAX_BOUNCES); bounce++)
 			{
 				double dist = Double.MAX_VALUE;
 				Reflector2D closestRef = null;
@@ -136,13 +195,21 @@ public class Example3 implements Example {
 					}
 				}
 				
-				if(closestRef == null) break;
+				totalDist+= dist;
 				
-				Segment2D travel = new Segment2D(currentRay.origin, closestPoint);
-				int distTravel = (int)travel.norm();
+				if(closestRef == null)
+				{
+					if(settings.getSettingValue(Settings.SETTING.SHOW_RAYS) != 0) DrawUtils.draw(currentRay, Main.frame);
+					break;
+				}
+				if(totalDist > settings.getSettingValue(Settings.SETTING.LIGHT_INTENSITY)) break;
 				
-				//Frame.draw(new Segment2D(currentRay.origin, closestPoint));
-				Frame.drawPix((int)closestPoint.x, (int)closestPoint.y, new Color((distTravel / 2)%256, (int)((Math.abs(currentRay.vect.x / currentRay.vect.norm())) * 255), (int)((Math.abs(currentRay.vect.y / currentRay.vect.norm())) * 255)));
+				if(settings.getSettingValue(Settings.SETTING.SHOW_RAYS) != 0) DrawUtils.draw(new Segment2D(currentRay.origin, closestPoint), Main.frame);
+				
+				int intensity = (int)((settings.getSettingValue(Settings.SETTING.LIGHT_INTENSITY) - totalDist) <= 0.5 ? 0 : 255 * (settings.getSettingValue(Settings.SETTING.LIGHT_INTENSITY) - totalDist) / settings.getSettingValue(Settings.SETTING.LIGHT_INTENSITY));
+				if(intensity > 255) System.out.println(intensity);
+				
+				DrawUtils.drawPix((int)closestPoint.x, (int)closestPoint.y, new Color(intensity, intensity, intensity), Main.frame);
 				currentRay = closestRef.reflect(currentRay);
 				lastRef = closestRef;
 			}

@@ -8,10 +8,10 @@ import MathPkg.Rays.Ray3D;
 import MathPkg.Shapes.Shapes3D.Reflector3D;
 import MathPkg.Shapes.Shapes3D.Sphere;
 import MathPkg.Vectors.Vector3D;
-import mainPkg.Frame;
 import mainPkg.Main;
 import mainPkg.events.Event;
 import mainPkg.events.types.MouseEv;
+import mainPkg.Graphics.DrawUtils;
 
 public class Example2 implements Example {
 	
@@ -81,10 +81,9 @@ public class Example2 implements Example {
 		queue.clear();
 	}
 	
-	public void draw()
+	public void render()
 	{
 		//System.out.print("\rcam (" + camera.x + ", " + camera.y + ", " + camera.z + ");");
-		Frame.start();
 		
 		for(int y = 0; y < Main.frameSize[0]; y++)
 		{
@@ -92,7 +91,7 @@ public class Example2 implements Example {
 			for(int z = 0; z < Main.frameSize[1]; z++)
 			{
 				//draw background
-				Frame.drawPix(y, z, new Color(255 - z/10, 255 - z/10, 255 - z/10));
+				DrawUtils.drawPix(y, z, new Color(255 - z/10, 255 - z/10, 255 - z/10), Main.frame);
 				
 				Ray3D currentRay = rayFrame[y][z];
 				
@@ -107,7 +106,7 @@ public class Example2 implements Example {
 					{
 						if(ref.intersects(rayFrame[y][z]))
 						{
-							Frame.drawPix(y, z, Color.black);
+							DrawUtils.drawPix(y, z, Color.black, Main.frame);
 							System.out.println("dist ray sphere = " + currentRay.projection(((Sphere)ref).center).distance(((Sphere)ref).center));
 							Point3D[] intersections = ref.intersection(currentRay);
 
@@ -133,13 +132,12 @@ public class Example2 implements Example {
 				}
 				
 				if(bounces > 0) {
-					Frame.drawPix(y, z, new Color(bounces*10, bounces*10, bounces*10));
+					DrawUtils.drawPix(y, z, new Color(bounces*10, bounces*10, bounces*10), Main.frame);
 				}
 				
 				
 			}
 		}
-		Frame.end();
 	}
 
 }
